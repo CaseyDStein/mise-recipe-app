@@ -69,6 +69,18 @@ recipesRouter.post('/import', async (req, res) => {
       );
     }
 
+    if (data.cuisine) {
+      const cuisineTag = data.cuisine.trim().toLowerCase();
+      const { data: tag } = await supabase
+        .from('tags')
+        .upsert({ user_id: userId, name: cuisineTag }, { onConflict: 'user_id,name' })
+        .select('id')
+        .single();
+      if (tag) {
+        await supabase.from('recipe_tags').upsert({ recipe_id: recipe.id, tag_id: tag.id });
+      }
+    }
+
     if (data.nutritionalInfo) {
       await supabase.from('nutritional_info').insert({
         recipe_id: recipe.id,
