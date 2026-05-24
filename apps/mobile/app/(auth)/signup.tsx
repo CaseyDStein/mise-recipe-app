@@ -13,7 +13,6 @@ export default function SignUpScreen() {
   const [confirm, setConfirm] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  const [success, setSuccess] = useState(false);
   const signUp = useAuthStore((s) => s.signUp);
 
   async function handleSignUp() {
@@ -24,23 +23,12 @@ export default function SignUpScreen() {
     setError('');
     try {
       await signUp(email.trim(), password);
-      setSuccess(true);
+      router.replace('/(tabs)');
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Sign up failed');
     } finally {
       setLoading(false);
     }
-  }
-
-  if (success) {
-    return (
-      <View style={styles.successContainer}>
-        <Ionicons name="checkmark-circle" size={72} color={colors.success} />
-        <Text style={styles.successTitle}>Check your email</Text>
-        <Text style={styles.successBody}>We sent a confirmation link to {email}. Click it to activate your account.</Text>
-        <Button label="Back to Login" onPress={() => router.replace('/(auth)/login')} variant="secondary" />
-      </View>
-    );
   }
 
   return (
@@ -92,7 +80,4 @@ const styles = StyleSheet.create({
   footer: { flexDirection: 'row', justifyContent: 'center', alignItems: 'center' },
   footerText: { ...typography.bodyMd, color: colors.text2 },
   link: { ...typography.bodyMd, color: colors.accent, fontWeight: '600' },
-  successContainer: { flex: 1, padding: spacing.xl, alignItems: 'center', justifyContent: 'center', gap: spacing.lg },
-  successTitle: { ...typography.displaySm, color: colors.text0, textAlign: 'center' },
-  successBody: { ...typography.bodyLg, color: colors.text2, textAlign: 'center' },
 });

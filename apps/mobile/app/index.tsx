@@ -4,7 +4,7 @@ import { View, ActivityIndicator } from 'react-native';
 import { colors } from '@/src/lib/theme';
 
 export default function Index() {
-  const { session, loading } = useAuthStore();
+  const { token, loading } = useAuthStore();
 
   if (loading) {
     return (
@@ -14,5 +14,5 @@ export default function Index() {
     );
   }
 
-  return <Redirect href={session ? '/(tabs)' : '/(auth)/login'} />;
+  return <Redirect href={token ? '/(tabs)' : '/(auth)/login'} />;
 }

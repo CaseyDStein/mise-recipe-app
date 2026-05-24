@@ -1,36 +1,53 @@
 import { create } from 'zustand';
-import { Session, User } from '@supabase/supabase-js';
-import { supabase } from '@/src/lib/supabase';
+import { saveAuth, clearAuth, loadAuth, StoredUser } from '@/src/lib/auth';
+
+const API_URL = process.env.EXPO_PUBLIC_API_URL!;
 
 interface AuthState {
-  session: Session | null;
-  user: User | null;
+  user: StoredUser | null;
+  token: string | null;
   loading: boolean;
+  hydrate: () => Promise<void>;
   signIn: (email: string, password: string) => Promise<void>;
   signUp: (email: string, password: string) => Promise<void>;
   signOut: () => Promise<void>;
-  setSession: (session: Session | null) => void;
+}
+
+async function authRequest(path: string, body: { email: string; password: string }) {
+  const res = await fetch(`${API_URL}${path}`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body),
+  });
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.error || 'Request failed');
+  return data as { token: string; user: StoredUser };
 }
 
 export const useAuthStore = create<AuthState>((set) => ({
-  session: null,
   user: null,
+  token: null,
   loading: true,
 
-  setSession: (session) => set({ session, user: session?.user ?? null, loading: false }),
+  hydrate: async () => {
+    const stored = await loadAuth();
+    set({ user: stored?.user ?? null, token: stored?.token ?? null, loading: false });
+  },
 
   signIn: async (email, password) => {
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
-    if (error) throw error;
+    const { token, user } = await authRequest('/api/auth/login', { email, password });
+    await saveAuth(token, user);
+    set({ token, user });
   },
 
   signUp: async (email, password) => {
-    const { error } = await supabase.auth.signUp({ email, password });
-    if (error) throw error;
+    const { token, user } = await authRequest('/api/auth/register', { email, password });
+    await saveAuth(token, user);
+    set({ token, user });
   },
 
   signOut: async () => {
-    await supabase.auth.signOut();
-    set({ session: null, user: null });
+    await clearAuth();
+    set({ user: null, token: null });
   },
 }));

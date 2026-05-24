@@ -1,11 +1,11 @@
-import { supabase } from '@/src/lib/supabase';
+import { getToken } from '@/src/lib/auth';
 
-const API_URL = process.env.EXPO_PUBLIC_API_URL || 'http://localhost:3000';
+const API_URL = process.env.EXPO_PUBLIC_API_URL!;
 
 async function getAuthHeaders() {
-  const { data: { session } } = await supabase.auth.getSession();
-  if (!session) throw new Error('Not authenticated');
-  return { Authorization: `Bearer ${session.access_token}`, 'Content-Type': 'application/json' };
+  const token = await getToken();
+  if (!token) throw new Error('Not authenticated');
+  return { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' };
 }
 
 async function apiFetch<T>(path: string, options?: RequestInit): Promise<T> {

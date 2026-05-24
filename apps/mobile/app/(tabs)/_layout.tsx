@@ -5,8 +5,8 @@ import { useAuthStore } from '@/src/stores/authStore';
 import { colors, radius } from '@/src/lib/theme';
 
 export default function TabsLayout() {
-  const { session, loading } = useAuthStore();
-  if (!loading && !session) return <Redirect href="/(auth)/login" />;
+  const { token, loading } = useAuthStore();
+  if (!loading && !token) return <Redirect href="/(auth)/login" />;
 
   return (
     <Tabs
