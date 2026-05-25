@@ -11,6 +11,7 @@ import { RecipeCard } from '@/src/components/RecipeCard';
 import { TextInput } from '@/src/components/TextInput';
 import { colors, spacing, typography, radius } from '@/src/lib/theme';
 import { useDebounce } from '@/src/hooks/useDebounce';
+import { useAuthStore } from '@/src/stores/authStore';
 
 type Recipe = { id: string; title: string; image_url?: string; total_time_minutes?: number; servings?: number; cuisine?: string };
 type Tag = { id: string; name: string; recipe_tags: { count: number }[] };
@@ -19,10 +20,12 @@ export default function SearchScreen() {
   const [query, setQuery] = useState('');
   const [selectedTag, setSelectedTag] = useState<string | null>(null);
   const debouncedQuery = useDebounce(query, 300);
+  const token = useAuthStore((s) => s.token);
 
   const { data: tagsData } = useQuery({
     queryKey: ['tags'],
     queryFn: tagsApi.list,
+    enabled: !!token,
   });
 
   const { data, isLoading } = useQuery({
@@ -31,6 +34,7 @@ export default function SearchScreen() {
       query: debouncedQuery || undefined,
       tags: selectedTag ?? undefined,
     }),
+    enabled: !!token,
   });
 
   const tags = (tagsData?.data || []) as Tag[];

@@ -10,6 +10,7 @@ import { collectionsApi } from '@/src/services/api';
 import { Button } from '@/src/components/Button';
 import { TextInput } from '@/src/components/TextInput';
 import { colors, spacing, typography, radius, shadows } from '@/src/lib/theme';
+import { useAuthStore } from '@/src/stores/authStore';
 
 type Collection = { id: string; name: string; description?: string; recipe_collections: { count: number }[] };
 
@@ -18,10 +19,12 @@ export default function CollectionsScreen() {
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const queryClient = useQueryClient();
+  const token = useAuthStore((s) => s.token);
 
   const { data, isLoading } = useQuery({
     queryKey: ['collections'],
     queryFn: collectionsApi.list,
+    enabled: !!token,
   });
 
   const createMutation = useMutation({
