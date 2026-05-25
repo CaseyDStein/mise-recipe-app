@@ -9,6 +9,8 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { recipesApi } from '@/src/services/api';
 import { colors, spacing, typography, radius, shadows } from '@/src/lib/theme';
 
+const PLACEHOLDER = require('../../assets/recipe-placeholder.png');
+
 type Ingredient = { id: string; text: string; quantity?: string; unit?: string };
 type Step = { id: string; order_num: number; text: string };
 type NutritionalInfo = {
@@ -79,13 +81,11 @@ export default function RecipeScreen() {
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 100 }}>
         {/* Header image */}
         <View style={styles.imageContainer}>
-          {recipe.image_url ? (
-            <Image source={{ uri: recipe.image_url }} style={styles.image} resizeMode="cover" />
-          ) : (
-            <View style={[styles.image, styles.imagePlaceholder]}>
-              <Ionicons name="restaurant-outline" size={64} color={colors.text3} />
-            </View>
-          )}
+          <Image
+            source={recipe.image_url ? { uri: recipe.image_url } : PLACEHOLDER}
+            style={styles.image}
+            resizeMode="cover"
+          />
           <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
             <Ionicons name="arrow-back" size={22} color={colors.text0} />
           </TouchableOpacity>
@@ -215,7 +215,6 @@ const styles = StyleSheet.create({
   loading: { flex: 1, backgroundColor: colors.bg1, alignItems: 'center', justifyContent: 'center' },
   imageContainer: { position: 'relative', height: 280 },
   image: { width: '100%', height: '100%' },
-  imagePlaceholder: { backgroundColor: colors.bg2, alignItems: 'center', justifyContent: 'center' },
   backButton: {
     position: 'absolute', top: spacing.lg, left: spacing.lg,
     width: 40, height: 40, borderRadius: radius.full,

@@ -3,6 +3,8 @@ import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { colors, spacing, radius, typography, shadows } from '@/src/lib/theme';
 
+const PLACEHOLDER = require('../../../assets/recipe-placeholder.png');
+
 interface RecipeCardProps {
   id: string;
   title: string;
@@ -18,13 +20,11 @@ export function RecipeCard({ title, imageUrl, totalTimeMinutes, servings, cuisin
   return (
     <TouchableOpacity style={styles.card} onPress={onPress} activeOpacity={0.9}>
       <View style={styles.imageContainer}>
-        {imageUrl ? (
-          <Image source={{ uri: imageUrl }} style={styles.image} resizeMode="cover" />
-        ) : (
-          <View style={styles.imagePlaceholder}>
-            <Ionicons name="restaurant-outline" size={36} color={colors.text3} />
-          </View>
-        )}
+        <Image
+          source={imageUrl ? { uri: imageUrl } : PLACEHOLDER}
+          style={styles.image}
+          resizeMode="cover"
+        />
         {totalTimeMinutes && (
           <View style={styles.timeBadge}>
             <Ionicons name="time-outline" size={11} color={colors.text1} />
@@ -68,13 +68,6 @@ const styles = StyleSheet.create({
   },
   imageContainer: { position: 'relative', height: 180 },
   image: { width: '100%', height: '100%' },
-  imagePlaceholder: {
-    width: '100%',
-    height: '100%',
-    backgroundColor: colors.bg3,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
   timeBadge: {
     position: 'absolute',
     bottom: spacing.sm,
