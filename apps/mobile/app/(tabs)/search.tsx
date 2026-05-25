@@ -52,12 +52,7 @@ export default function SearchScreen() {
     setSelectedTag((prev) => (prev === name ? null : name));
   }
 
-  function clearAll() {
-    setQuery('');
-    setSelectedTag(null);
-  }
-
-  return (
+return (
     <SafeAreaView style={styles.safe}>
       <FlatList
         data={recipes}
@@ -122,9 +117,6 @@ export default function SearchScreen() {
                   {selectedTag ? ` tagged "${selectedTag}"` : ''}
                   {query ? ` matching "${query}"` : ''}
                 </Text>
-                <TouchableOpacity onPress={clearAll}>
-                  <Text style={styles.clearLink}>Clear all</Text>
-                </TouchableOpacity>
               </View>
             )}
 
@@ -216,11 +208,7 @@ const styles = StyleSheet.create({
   },
   tagCountActive: { color: colors.accentMuted, backgroundColor: 'rgba(255,255,255,0.2)' },
 
-  resultsRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-  },
+  resultsRow: {},
   resultsText: { ...typography.bodySm, color: colors.text2 },
 
   loader: { marginTop: spacing.xl },
