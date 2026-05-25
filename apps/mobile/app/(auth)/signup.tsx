@@ -1,19 +1,29 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, KeyboardAvoidingView, Platform, ScrollView, TouchableOpacity } from 'react-native';
+import React, { useState, useRef } from 'react';
+import {
+  View, Text, StyleSheet, KeyboardAvoidingView, Platform, ScrollView, TouchableOpacity,
+  TextInput as RNTextInput,
+} from 'react-native';
 import { Link, router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useAuthStore } from '@/src/stores/authStore';
 import { Button } from '@/src/components/Button';
 import { TextInput } from '@/src/components/TextInput';
-import { colors, spacing, typography, radius } from '@/src/lib/theme';
+import { colors, spacing, typography } from '@/src/lib/theme';
 
 export default function SignUpScreen() {
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirm, setConfirm] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const signUp = useAuthStore((s) => s.signUp);
+
+  const lastNameRef = useRef<RNTextInput>(null);
+  const emailRef = useRef<RNTextInput>(null);
+  const passwordRef = useRef<RNTextInput>(null);
+  const confirmRef = useRef<RNTextInput>(null);
 
   async function handleSignUp() {
     if (!email || !password) return setError('Please fill in all fields');
@@ -22,7 +32,7 @@ export default function SignUpScreen() {
     setLoading(true);
     setError('');
     try {
-      await signUp(email.trim(), password);
+      await signUp(email.trim(), password, firstName.trim() || undefined, lastName.trim() || undefined);
       router.replace('/(tabs)');
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Sign up failed');
@@ -43,17 +53,34 @@ export default function SignUpScreen() {
         </View>
         <View style={styles.form}>
           <TextInput
+            label="First Name" placeholder="Jane" value={firstName} onChangeText={setFirstName}
+            autoCapitalize="words" returnKeyType="next" onSubmitEditing={() => lastNameRef.current?.focus()}
+            leftIcon={<Ionicons name="person-outline" size={18} color={colors.text3} />}
+          />
+          <TextInput
+            ref={lastNameRef}
+            label="Last Name" placeholder="Smith" value={lastName} onChangeText={setLastName}
+            autoCapitalize="words" returnKeyType="next" onSubmitEditing={() => emailRef.current?.focus()}
+            leftIcon={<Ionicons name="person-outline" size={18} color={colors.text3} />}
+          />
+          <TextInput
+            ref={emailRef}
             label="Email" placeholder="you@example.com" value={email} onChangeText={setEmail}
-            keyboardType="email-address" autoCapitalize="none"
+            keyboardType="email-address" autoCapitalize="none" returnKeyType="next"
+            onSubmitEditing={() => passwordRef.current?.focus()}
             leftIcon={<Ionicons name="mail-outline" size={18} color={colors.text3} />}
           />
           <TextInput
+            ref={passwordRef}
             label="Password" placeholder="Min. 8 characters" value={password} onChangeText={setPassword}
-            secureTextEntry leftIcon={<Ionicons name="lock-closed-outline" size={18} color={colors.text3} />}
+            secureTextEntry returnKeyType="next" onSubmitEditing={() => confirmRef.current?.focus()}
+            leftIcon={<Ionicons name="lock-closed-outline" size={18} color={colors.text3} />}
           />
           <TextInput
+            ref={confirmRef}
             label="Confirm Password" placeholder="Repeat password" value={confirm} onChangeText={setConfirm}
-            secureTextEntry leftIcon={<Ionicons name="lock-closed-outline" size={18} color={colors.text3} />}
+            secureTextEntry returnKeyType="go" onSubmitEditing={handleSignUp}
+            leftIcon={<Ionicons name="lock-closed-outline" size={18} color={colors.text3} />}
           />
           {error ? <Text style={styles.errorText}>{error}</Text> : null}
           <Button label="Create Account" onPress={handleSignUp} loading={loading} size="lg" />

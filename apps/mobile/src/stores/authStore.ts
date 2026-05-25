@@ -9,12 +9,12 @@ interface AuthState {
   loading: boolean;
   hydrate: () => Promise<void>;
   signIn: (email: string, password: string) => Promise<void>;
-  signUp: (email: string, password: string) => Promise<void>;
+  signUp: (email: string, password: string, firstName?: string, lastName?: string) => Promise<void>;
   signOut: () => Promise<void>;
   updateProfile: (firstName: string, lastName: string) => Promise<void>;
 }
 
-async function authRequest(path: string, body: { email: string; password: string }) {
+async function authRequest(path: string, body: { email: string; password: string; firstName?: string; lastName?: string }) {
   const res = await fetch(`${API_URL}${path}`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -41,8 +41,8 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     set({ token, user });
   },
 
-  signUp: async (email, password) => {
-    const { token, user } = await authRequest('/api/auth/register', { email, password });
+  signUp: async (email, password, firstName, lastName) => {
+    const { token, user } = await authRequest('/api/auth/register', { email, password, firstName, lastName });
     await saveAuth(token, user);
     set({ token, user });
   },

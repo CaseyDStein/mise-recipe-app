@@ -10,6 +10,8 @@ export const authRouter = Router();
 const credentialsSchema = z.object({
   email: z.string().email(),
   password: z.string().min(8),
+  firstName: z.string().max(100).optional(),
+  lastName: z.string().max(100).optional(),
 });
 
 const profileSchema = z.object({
@@ -36,7 +38,7 @@ authRouter.post('/register', async (req, res) => {
   const parsed = credentialsSchema.safeParse(req.body);
   if (!parsed.success) return res.status(400).json({ error: 'Email and password (min 8 chars) required' });
 
-  const { email, password } = parsed.data;
+  const { email, password, firstName, lastName } = parsed.data;
 
   const { data: existing } = await supabase
     .from('users')
@@ -50,7 +52,12 @@ authRouter.post('/register', async (req, res) => {
 
   const { data: user, error } = await supabase
     .from('users')
-    .insert({ email: email.toLowerCase(), password_hash: passwordHash })
+    .insert({
+      email: email.toLowerCase(),
+      password_hash: passwordHash,
+      first_name: firstName?.trim() || null,
+      last_name: lastName?.trim() || null,
+    })
     .select('id, email, created_at, first_name, last_name')
     .single();
 
