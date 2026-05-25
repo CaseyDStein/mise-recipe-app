@@ -114,7 +114,23 @@ recipesRouter.get('/', async (req, res) => {
     .range(offset, offset + pageSize - 1);
 
   if (query) {
-    dbQuery = dbQuery.textSearch('fts', query, { config: 'english', type: 'websearch' });
+    const term = query.trim();
+    // Run all field searches in parallel; ingredients live in a separate table
+    const [ingText, ingName, titleRows, descRows, cuisineRows] = await Promise.all([
+      supabase.from('ingredients').select('recipe_id').ilike('text', `%${term}%`),
+      supabase.from('ingredients').select('recipe_id').ilike('name', `%${term}%`),
+      supabase.from('recipes').select('id').eq('user_id', userId).ilike('title', `%${term}%`),
+      supabase.from('recipes').select('id').eq('user_id', userId).ilike('description', `%${term}%`),
+      supabase.from('recipes').select('id').eq('user_id', userId).ilike('cuisine', `%${term}%`),
+    ]);
+    const matchingIds = [...new Set([
+      ...(ingText.data || []).map((r) => r.recipe_id),
+      ...(ingName.data || []).map((r) => r.recipe_id),
+      ...(titleRows.data || []).map((r) => r.id),
+      ...(descRows.data || []).map((r) => r.id),
+      ...(cuisineRows.data || []).map((r) => r.id),
+    ])];
+    dbQuery = dbQuery.in('id', matchingIds.length > 0 ? matchingIds : ['no-match']);
   }
 
   if (collectionId) {
