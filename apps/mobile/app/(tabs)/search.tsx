@@ -176,9 +176,9 @@ export default function SearchScreen() {
 
 const styles = StyleSheet.create({
   safe: { flex: 1, backgroundColor: colors.bg1 },
-  header: { padding: spacing.lg, paddingBottom: 0, gap: spacing.md },
+  header: { paddingTop: spacing.md, gap: spacing.md },
   title: { ...typography.displaySm, color: colors.text0 },
-  list: { paddingHorizontal: spacing.lg },
+  list: { padding: spacing.lg, paddingTop: spacing.md },
 
   tagsSection: { gap: spacing.sm },
   tagsHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },

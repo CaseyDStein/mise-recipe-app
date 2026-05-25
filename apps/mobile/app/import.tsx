@@ -27,6 +27,7 @@ export default function ImportScreen() {
     mutationFn: () => recipesApi.import(url.trim()),
     onSuccess: (data: unknown) => {
       queryClient.invalidateQueries({ queryKey: ['recipes'] });
+      queryClient.invalidateQueries({ queryKey: ['tags'] });
       const recipe = (data as { recipe: { id: string } }).recipe;
       router.replace(`/recipe/${recipe.id}`);
     },
