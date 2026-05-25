@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import {
   View, Text, StyleSheet, FlatList, SafeAreaView, ActivityIndicator,
-  TouchableOpacity, ScrollView,
+  TouchableOpacity,
 } from 'react-native';
 import { router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
@@ -86,11 +86,7 @@ export default function SearchScreen() {
                     </TouchableOpacity>
                   )}
                 </View>
-                <ScrollView
-                  horizontal
-                  showsHorizontalScrollIndicator={false}
-                  contentContainerStyle={styles.tagsList}
-                >
+                <View style={styles.tagsList}>
                   {tags.map((tag) => {
                     const active = selectedTag === tag.name;
                     return (
@@ -110,7 +106,7 @@ export default function SearchScreen() {
                       </TouchableOpacity>
                     );
                   })}
-                </ScrollView>
+                </View>
               </View>
             )}
 
@@ -184,7 +180,7 @@ const styles = StyleSheet.create({
   tagsHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   tagsLabel: { ...typography.label, color: colors.text3 },
   clearLink: { ...typography.titleSm, color: colors.accent },
-  tagsList: { gap: spacing.sm, paddingRight: spacing.lg },
+  tagsList: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm },
 
   tagChip: {
     flexDirection: 'row',
