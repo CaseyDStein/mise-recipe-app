@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { colors, spacing, radius, typography, shadows } from '@/src/lib/theme';
 
-const PLACEHOLDER = require('../../../assets/recipe-placeholder.png');
+const PLACEHOLDER = require('../../assets/recipe-placeholder.png');
 
 interface RecipeCardProps {
   id: string;
