@@ -1,11 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import {
   View, Text, StyleSheet, FlatList, SafeAreaView, ActivityIndicator,
   TouchableOpacity,
 } from 'react-native';
-import { router } from 'expo-router';
+import { router, useFocusEffect } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { recipesApi, tagsApi } from '@/src/services/api';
 import { RecipeCard } from '@/src/components/RecipeCard';
 import { TextInput } from '@/src/components/TextInput';
@@ -21,6 +21,11 @@ export default function SearchScreen() {
   const [selectedTag, setSelectedTag] = useState<string | null>(null);
   const debouncedQuery = useDebounce(query, 300);
   const token = useAuthStore((s) => s.token);
+  const queryClient = useQueryClient();
+
+  useFocusEffect(useCallback(() => {
+    if (token) queryClient.invalidateQueries({ queryKey: ['tags'] });
+  }, [token, queryClient]));
 
   const { data: tagsData } = useQuery({
     queryKey: ['tags'],
