@@ -30,7 +30,7 @@ export default function HomeScreen() {
   });
 
   const recipes = (data?.data || []) as Recipe[];
-  const firstName = user?.email?.split('@')[0] ?? 'there';
+  const displayName = [user?.firstName, user?.lastName].filter(Boolean).join(' ') || 'there';
 
   return (
     <SafeAreaView style={styles.safe}>
@@ -43,7 +43,7 @@ export default function HomeScreen() {
           <View style={styles.header}>
             <View style={styles.headerTop}>
               <View>
-                <Text style={styles.greeting}>Hello, {firstName} 👋</Text>
+                <Text style={styles.greeting}>Hello, {displayName}</Text>
                 <Text style={styles.subGreeting}>
                   {recipes.length > 0 ? `${data?.total ?? recipes.length} recipes saved` : 'Start saving recipes'}
                 </Text>

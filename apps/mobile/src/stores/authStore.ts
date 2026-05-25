@@ -11,6 +11,7 @@ interface AuthState {
   signIn: (email: string, password: string) => Promise<void>;
   signUp: (email: string, password: string) => Promise<void>;
   signOut: () => Promise<void>;
+  updateProfile: (firstName: string, lastName: string) => Promise<void>;
 }
 
 async function authRequest(path: string, body: { email: string; password: string }) {
@@ -24,7 +25,7 @@ async function authRequest(path: string, body: { email: string; password: string
   return data as { token: string; user: StoredUser };
 }
 
-export const useAuthStore = create<AuthState>((set) => ({
+export const useAuthStore = create<AuthState>((set, get) => ({
   user: null,
   token: null,
   loading: true,
@@ -49,5 +50,22 @@ export const useAuthStore = create<AuthState>((set) => ({
   signOut: async () => {
     await clearAuth();
     set({ user: null, token: null });
+  },
+
+  updateProfile: async (firstName, lastName) => {
+    const { token, user } = get();
+    if (!token || !user) throw new Error('Not authenticated');
+
+    const res = await fetch(`${API_URL}/api/auth/profile`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+      body: JSON.stringify({ firstName, lastName }),
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Failed to update profile');
+
+    const updatedUser = { ...user, firstName: data.user.firstName, lastName: data.user.lastName };
+    await saveAuth(token, updatedUser);
+    set({ user: updatedUser });
   },
 }));

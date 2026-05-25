@@ -7,6 +7,8 @@ export interface StoredUser {
   id: string;
   email: string;
   createdAt: string;
+  firstName?: string;
+  lastName?: string;
 }
 
 export async function saveAuth(token: string, user: StoredUser) {
