@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   View, Text, StyleSheet, KeyboardAvoidingView, Platform,
   ScrollView, SafeAreaView, TouchableOpacity, ActivityIndicator,
 } from 'react-native';
-import { router } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { recipesApi } from '@/src/services/api';
@@ -19,12 +19,14 @@ const EXAMPLE_URLS = [
 ];
 
 export default function ImportScreen() {
-  const [url, setUrl] = useState('');
+  const { url: sharedUrl } = useLocalSearchParams<{ url?: string }>();
+  const [url, setUrl] = useState(sharedUrl ?? '');
   const [error, setError] = useState('');
+  const autoImported = useRef(false);
   const queryClient = useQueryClient();
 
   const importMutation = useMutation({
-    mutationFn: () => recipesApi.import(url.trim()),
+    mutationFn: (urlToImport: string) => recipesApi.import(urlToImport.trim()),
     onSuccess: (data: unknown) => {
       queryClient.invalidateQueries({ queryKey: ['recipes'] });
       queryClient.invalidateQueries({ queryKey: ['tags'] });
@@ -34,12 +36,23 @@ export default function ImportScreen() {
     onError: (e: Error) => setError(e.message),
   });
 
-  function handleImport() {
+  function handleImport(urlOverride?: string) {
+    const target = (urlOverride ?? url).trim();
     setError('');
-    if (!url.trim()) return setError('Please enter a recipe URL');
-    try { new URL(url.trim()); } catch { return setError('Please enter a valid URL'); }
-    importMutation.mutate();
+    if (!target) return setError('Please enter a recipe URL');
+    try { new URL(target); } catch { return setError('Please enter a valid URL'); }
+    importMutation.mutate(target);
   }
+
+  // Auto-import when the screen is opened from a share action.
+  useEffect(() => {
+    if (sharedUrl && !autoImported.current) {
+      autoImported.current = true;
+      handleImport(sharedUrl);
+    }
+  }, []);
+
+  const isShared = !!sharedUrl;
 
   return (
     <SafeAreaView style={styles.safe}>
@@ -49,7 +62,7 @@ export default function ImportScreen() {
             <TouchableOpacity onPress={() => router.back()}>
               <Ionicons name="close" size={28} color={colors.text1} />
             </TouchableOpacity>
-            <Text style={styles.topBarTitle}>Import Recipe</Text>
+            <Text style={styles.topBarTitle}>{isShared ? 'Saving Recipe' : 'Import Recipe'}</Text>
             <View style={{ width: 28 }} />
           </View>
 
@@ -57,10 +70,14 @@ export default function ImportScreen() {
             <View style={styles.heroIcon}>
               <Ionicons name="link" size={36} color={colors.accent} />
             </View>
-            <Text style={styles.heroTitle}>Paste any recipe URL</Text>
-            <Text style={styles.heroBody}>
-              We'll automatically extract the ingredients, steps, and nutritional info — nothing else.
+            <Text style={styles.heroTitle}>
+              {isShared ? 'Importing shared recipe' : 'Paste any recipe URL'}
             </Text>
+            {!isShared && (
+              <Text style={styles.heroBody}>
+                We'll automatically extract the ingredients, steps, and nutritional info — nothing else.
+              </Text>
+            )}
           </View>
 
           <View style={styles.inputSection}>
@@ -72,16 +89,24 @@ export default function ImportScreen() {
               autoCorrect={false}
               keyboardType="url"
               returnKeyType="go"
-              onSubmitEditing={handleImport}
+              onSubmitEditing={() => handleImport()}
+              editable={!importMutation.isPending}
               leftIcon={<Ionicons name="globe-outline" size={18} color={colors.text3} />}
-              rightIcon={url ? (
+              rightIcon={url && !importMutation.isPending ? (
                 <TouchableOpacity onPress={() => setUrl('')}>
                   <Ionicons name="close-circle" size={18} color={colors.text3} />
                 </TouchableOpacity>
               ) : undefined}
               error={error}
             />
-            <Button label={importMutation.isPending ? 'Importing...' : 'Import Recipe'} onPress={handleImport} loading={importMutation.isPending} size="lg" />
+            {!importMutation.isPending && (
+              <Button
+                label="Import Recipe"
+                onPress={() => handleImport()}
+                loading={importMutation.isPending}
+                size="lg"
+              />
+            )}
           </View>
 
           {importMutation.isPending && (
@@ -94,15 +119,17 @@ export default function ImportScreen() {
             </View>
           )}
 
-          <View style={styles.examples}>
-            <Text style={styles.examplesTitle}>Works with any recipe site</Text>
-            {EXAMPLE_URLS.map((u) => (
-              <View key={u} style={styles.exampleRow}>
-                <Ionicons name="checkmark-circle" size={16} color={colors.success} />
-                <Text style={styles.exampleText}>{u}</Text>
-              </View>
-            ))}
-          </View>
+          {!isShared && (
+            <View style={styles.examples}>
+              <Text style={styles.examplesTitle}>Works with any recipe site</Text>
+              {EXAMPLE_URLS.map((u) => (
+                <View key={u} style={styles.exampleRow}>
+                  <Ionicons name="checkmark-circle" size={16} color={colors.success} />
+                  <Text style={styles.exampleText}>{u}</Text>
+                </View>
+              ))}
+            </View>
+          )}
         </ScrollView>
       </KeyboardAvoidingView>
     </SafeAreaView>
