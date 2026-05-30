@@ -1,8 +1,20 @@
+import { View, ImageBackground, StyleSheet } from 'react-native';
 import { Stack } from 'expo-router';
-import { colors } from '@/src/lib/theme';
 
 export default function AuthLayout() {
   return (
-    <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: colors.bg1 } }} />
+    <ImageBackground
+      source={require('../../assets/splash.jpg')}
+      style={styles.bg}
+      resizeMode="cover"
+    >
+      <View style={styles.overlay} />
+      <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: 'transparent' } }} />
+    </ImageBackground>
   );
 }
+
+const styles = StyleSheet.create({
+  bg: { flex: 1 },
+  overlay: { ...StyleSheet.absoluteFillObject, backgroundColor: 'rgba(0,0,0,0.55)' },
+});

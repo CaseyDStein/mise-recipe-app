@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, KeyboardAvoidingView, Platform, ScrollView, TouchableOpacity, ImageBackground } from 'react-native';
+import { View, Text, StyleSheet, KeyboardAvoidingView, Platform, ScrollView, TouchableOpacity } from 'react-native';
 import { Link, router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useAuthStore } from '@/src/stores/authStore';
@@ -30,9 +30,7 @@ export default function LoginScreen() {
   }
 
   return (
-    <ImageBackground source={require('../../assets/splash.jpg')} style={{ flex: 1 }} resizeMode="cover">
-      <View style={styles.overlay} />
-      <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
+    <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
       <ScrollView contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled">
         <View style={styles.header}>
           <View style={styles.logoContainer}>
@@ -78,14 +76,12 @@ export default function LoginScreen() {
           </Link>
         </View>
       </ScrollView>
-      </KeyboardAvoidingView>
-    </ImageBackground>
+    </KeyboardAvoidingView>
   );
 }
 
 const styles = StyleSheet.create({
   button: { marginTop: spacing.md },
-  overlay: { ...StyleSheet.absoluteFillObject, backgroundColor: 'rgba(0,0,0,0.45)' },
   container: { flexGrow: 1, padding: spacing.lg, justifyContent: 'center', gap: spacing.xl },
   header: { alignItems: 'center', gap: spacing.md },
   logoContainer: {
