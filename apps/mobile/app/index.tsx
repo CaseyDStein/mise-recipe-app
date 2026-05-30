@@ -1,9 +1,10 @@
 import { Redirect } from 'expo-router';
 import { useAuthStore } from '@/src/stores/authStore';
 import { View, ActivityIndicator } from 'react-native';
-import { colors } from '@/src/lib/theme';
+import { useColors } from '@/src/lib/theme';
 
 export default function Index() {
+  const colors = useColors();
   const { token, loading } = useAuthStore();
 
   if (loading) {
