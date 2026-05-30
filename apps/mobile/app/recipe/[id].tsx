@@ -9,8 +9,6 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { recipesApi } from '@/src/services/api';
 import { colors, spacing, typography, radius, shadows } from '@/src/lib/theme';
 
-const PLACEHOLDER = require('../../assets/recipe-placeholder.png');
-
 type Ingredient = { id: string; text: string; quantity?: string; unit?: string };
 type Step = { id: string; order_num: number; text: string };
 type NutritionalInfo = {
@@ -79,20 +77,26 @@ export default function RecipeScreen() {
   return (
     <SafeAreaView style={styles.safe}>
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 100 }}>
-        {/* Header image */}
-        <View style={styles.imageContainer}>
-          <Image
-            source={recipe.image_url ? { uri: recipe.image_url } : PLACEHOLDER}
-            style={styles.image}
-            resizeMode="cover"
-          />
-          <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
-            <Ionicons name="arrow-back" size={22} color={colors.text0} />
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.deleteButton} onPress={handleDelete}>
-            <Ionicons name="trash-outline" size={20} color={colors.error} />
-          </TouchableOpacity>
-        </View>
+        {recipe.image_url ? (
+          <View style={styles.imageContainer}>
+            <Image source={{ uri: recipe.image_url }} style={styles.image} resizeMode="cover" />
+            <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
+              <Ionicons name="arrow-back" size={22} color={colors.text0} />
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.deleteButton} onPress={handleDelete}>
+              <Ionicons name="trash-outline" size={20} color={colors.error} />
+            </TouchableOpacity>
+          </View>
+        ) : (
+          <View style={styles.navBar}>
+            <TouchableOpacity style={styles.navButton} onPress={() => router.back()}>
+              <Ionicons name="arrow-back" size={22} color={colors.text1} />
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.navButton} onPress={handleDelete}>
+              <Ionicons name="trash-outline" size={20} color={colors.error} />
+            </TouchableOpacity>
+          </View>
+        )}
 
         <View style={styles.body}>
           {/* Title & meta */}
@@ -224,6 +228,14 @@ const styles = StyleSheet.create({
     position: 'absolute', top: spacing.lg, right: spacing.lg,
     width: 40, height: 40, borderRadius: radius.full,
     backgroundColor: colors.overlay50, alignItems: 'center', justifyContent: 'center',
+  },
+  navBar: {
+    flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
+    paddingHorizontal: spacing.lg, paddingVertical: spacing.md,
+  },
+  navButton: {
+    width: 40, height: 40, borderRadius: radius.full,
+    backgroundColor: colors.bg2, alignItems: 'center', justifyContent: 'center',
   },
   body: { padding: spacing.lg, gap: spacing.xl },
   titleSection: { gap: spacing.sm },

@@ -3,8 +3,6 @@ import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { colors, spacing, radius, typography, shadows } from '@/src/lib/theme';
 
-const PLACEHOLDER = require('../../assets/recipe-placeholder.png');
-
 interface RecipeCardProps {
   id: string;
   title: string;
@@ -19,19 +17,17 @@ interface RecipeCardProps {
 export function RecipeCard({ title, imageUrl, totalTimeMinutes, servings, cuisine, onPress }: RecipeCardProps) {
   return (
     <TouchableOpacity style={styles.card} onPress={onPress} activeOpacity={0.9}>
-      <View style={styles.imageContainer}>
-        <Image
-          source={imageUrl ? { uri: imageUrl } : PLACEHOLDER}
-          style={styles.image}
-          resizeMode="cover"
-        />
-        {totalTimeMinutes && (
-          <View style={styles.timeBadge}>
-            <Ionicons name="time-outline" size={11} color={colors.text1} />
-            <Text style={styles.timeBadgeText}>{formatTime(totalTimeMinutes)}</Text>
-          </View>
-        )}
-      </View>
+      {imageUrl && (
+        <View style={styles.imageContainer}>
+          <Image source={{ uri: imageUrl }} style={styles.image} resizeMode="cover" />
+          {totalTimeMinutes && (
+            <View style={styles.timeBadge}>
+              <Ionicons name="time-outline" size={11} color={colors.text1} />
+              <Text style={styles.timeBadgeText}>{formatTime(totalTimeMinutes)}</Text>
+            </View>
+          )}
+        </View>
+      )}
       <View style={styles.content}>
         <Text style={styles.title} numberOfLines={2}>{title}</Text>
         <View style={styles.meta}>
@@ -44,6 +40,12 @@ export function RecipeCard({ title, imageUrl, totalTimeMinutes, servings, cuisin
             <View style={styles.metaRow}>
               <Ionicons name="people-outline" size={12} color={colors.text2} />
               <Text style={styles.metaText}>{servings}</Text>
+            </View>
+          )}
+          {!imageUrl && totalTimeMinutes && (
+            <View style={styles.metaRow}>
+              <Ionicons name="time-outline" size={12} color={colors.text2} />
+              <Text style={styles.metaText}>{formatTime(totalTimeMinutes)}</Text>
             </View>
           )}
         </View>
