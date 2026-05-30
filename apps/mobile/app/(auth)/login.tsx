@@ -87,7 +87,7 @@ const styles = StyleSheet.create({
     width: 80, height: 80, borderRadius: radius.xl,
     backgroundColor: colors.accentMuted, alignItems: 'center', justifyContent: 'center',
   },
-  title: { ...typography.displayLg, color: colors.text0 },
+  title: { ...typography.displayLg, color: colors.text0, textAlign: 'center' },
   subtitle: { ...typography.bodyMd, color: colors.text2, textAlign: 'center' },
   form: { gap: spacing.md },
   errorText: { ...typography.bodyMd, color: colors.error, textAlign: 'center' },
