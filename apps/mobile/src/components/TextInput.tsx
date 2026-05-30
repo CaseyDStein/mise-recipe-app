@@ -17,8 +17,14 @@ export const TextInput = forwardRef<RNTextInput, InputProps>(
         {leftIcon && <View style={styles.iconLeft}>{leftIcon}</View>}
         <RNTextInput
           ref={ref}
-          style={[styles.input, leftIcon && styles.inputWithLeft, rightIcon && styles.inputWithRight, style]}
-          placeholderTextColor={colors.text3}
+          style={[
+            styles.input,
+            leftIcon && styles.inputWithLeft,
+            rightIcon && styles.inputWithRight,
+            !props.multiline && !props.secureTextEntry && styles.inputCentered,
+            style,
+          ]}
+          placeholderTextColor={colors.text2}
           {...props}
         />
         {rightIcon && <View style={styles.iconRight}>{rightIcon}</View>}
@@ -32,7 +38,7 @@ TextInput.displayName = 'TextInput';
 
 const styles = StyleSheet.create({
   container: { gap: spacing.xs },
-  label: { ...typography.titleSm, color: colors.text2 },
+  label: { ...typography.titleSm, color: colors.text0 },
   inputWrapper: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -49,6 +55,11 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.sm + 2,
     minHeight: 48,
+  },
+  inputCentered: {
+    paddingVertical: 0,
+    height: 48,
+    textAlignVertical: 'center',
   },
   inputWithLeft: { paddingLeft: spacing.xs },
   inputWithRight: { paddingRight: spacing.xs },
