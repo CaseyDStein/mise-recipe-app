@@ -50,7 +50,8 @@ const styles = StyleSheet.create({
   inputError: { borderColor: colors.error },
   input: {
     flex: 1,
-    ...typography.bodyMd,
+    fontSize: typography.bodyMd.fontSize,
+    fontWeight: typography.bodyMd.fontWeight,
     color: colors.text0,
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.sm + 2,
