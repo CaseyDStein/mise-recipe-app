@@ -51,7 +51,7 @@ export default function LoginScreen() {
             keyboardType="email-address"
             autoCapitalize="none"
             autoComplete="email"
-            leftIcon={<Ionicons name="mail-outline" size={18} color={colors.text3} />}
+            leftIcon={<Ionicons name="mail-outline" size={18} color={colors.text2} />}
           />
           <TextInput
             label="Password"
@@ -60,15 +60,15 @@ export default function LoginScreen() {
             onChangeText={setPassword}
             secureTextEntry={!showPassword}
             autoComplete="current-password"
-            leftIcon={<Ionicons name="lock-closed-outline" size={18} color={colors.text3} />}
+            leftIcon={<Ionicons name="lock-closed-outline" size={18} color={colors.text2} />}
             rightIcon={
               <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
-                <Ionicons name={showPassword ? 'eye-off-outline' : 'eye-outline'} size={18} color={colors.text3} />
+                <Ionicons name={showPassword ? 'eye-off-outline' : 'eye-outline'} size={18} color={colors.text2} />
               </TouchableOpacity>
             }
           />
           {error ? <Text style={styles.errorText}>{error}</Text> : null}
-          <Button label="Sign In" onPress={handleLogin} loading={loading} size="lg" />
+          <Button label="Sign In" style={styles.button} onPress={handleLogin} loading={loading} size="lg" />
         </View>
 
         <View style={styles.footer}>
@@ -84,18 +84,19 @@ export default function LoginScreen() {
 }
 
 const styles = StyleSheet.create({
-  overlay: { ...StyleSheet.absoluteFillObject, backgroundColor: 'rgba(0,0,0,0.55)' },
+  button: { marginTop: spacing.md },
+  overlay: { ...StyleSheet.absoluteFillObject, backgroundColor: 'rgba(0,0,0,0.45)' },
   container: { flexGrow: 1, padding: spacing.lg, justifyContent: 'center', gap: spacing.xl },
   header: { alignItems: 'center', gap: spacing.md },
   logoContainer: {
     width: 80, height: 80, borderRadius: radius.xl,
-    backgroundColor: colors.accentMuted, alignItems: 'center', justifyContent: 'center',
+    alignItems: 'center', justifyContent: 'center',
   },
   title: { ...typography.displayLg, color: colors.text0, textAlign: 'center' },
-  subtitle: { ...typography.bodyMd, color: colors.text2, textAlign: 'center' },
+  subtitle: { ...typography.bodyMd, color: colors.text0, textAlign: 'center' },
   form: { gap: spacing.md },
   errorText: { ...typography.bodyMd, color: colors.error, textAlign: 'center' },
   footer: { flexDirection: 'row', justifyContent: 'center', alignItems: 'center' },
-  footerText: { ...typography.bodyMd, color: colors.text2 },
+  footerText: { ...typography.bodyMd, color: colors.text0 },
   link: { ...typography.bodyMd, color: colors.accent, fontWeight: '600' },
 });
