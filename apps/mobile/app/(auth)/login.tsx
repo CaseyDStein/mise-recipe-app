@@ -36,7 +36,7 @@ export default function LoginScreen() {
           <View style={styles.logoContainer}>
             <Ionicons name="restaurant" size={40} color={colors.accent} />
           </View>
-          <Text style={styles.title}>Mise</Text>
+          <Text style={styles.title}>The Recipe Organizer</Text>
           <Text style={styles.subtitle}>Your recipe collection, beautifully organized</Text>
         </View>
 

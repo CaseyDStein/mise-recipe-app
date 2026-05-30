@@ -106,7 +106,7 @@ export default function ProfileScreen() {
             </TouchableOpacity>
           </View>
 
-          <Text style={styles.version}>Mise v1.0.0</Text>
+          <Text style={styles.version}>The Recipe Organizer v1.0.0</Text>
         </ScrollView>
       </KeyboardAvoidingView>
     </SafeAreaView>
