@@ -1,7 +1,7 @@
 import React, { useState, useRef } from 'react';
 import {
   View, Text, StyleSheet, KeyboardAvoidingView, Platform, ScrollView, TouchableOpacity,
-  TextInput as RNTextInput,
+  ImageBackground, TextInput as RNTextInput,
 } from 'react-native';
 import { Link, router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
@@ -42,7 +42,9 @@ export default function SignUpScreen() {
   }
 
   return (
-    <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
+    <ImageBackground source={require('../../assets/splash.jpg')} style={{ flex: 1 }} resizeMode="cover">
+      <View style={styles.overlay} />
+      <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
       <ScrollView contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled">
         <TouchableOpacity style={styles.back} onPress={() => router.back()}>
           <Ionicons name="arrow-back" size={24} color={colors.text1} />
@@ -92,16 +94,18 @@ export default function SignUpScreen() {
           </Link>
         </View>
       </ScrollView>
-    </KeyboardAvoidingView>
+      </KeyboardAvoidingView>
+    </ImageBackground>
   );
 }
 
 const styles = StyleSheet.create({
+  overlay: { ...StyleSheet.absoluteFillObject, backgroundColor: 'rgba(0,0,0,0.55)' },
   container: { flexGrow: 1, padding: spacing.lg, gap: spacing.xl },
   back: { paddingTop: spacing.xl },
   header: { gap: spacing.sm },
   title: { ...typography.displayMd, color: colors.text0 },
-  subtitle: { ...typography.bodyLg, color: colors.text2 },
+  subtitle: { ...typography.bodyLg, color: colors.text0 },
   form: { gap: spacing.md },
   errorText: { ...typography.bodyMd, color: colors.error, textAlign: 'center' },
   footer: { flexDirection: 'row', justifyContent: 'center', alignItems: 'center' },
