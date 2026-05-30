@@ -8,7 +8,7 @@
     "scheme": "mise",
     "userInterfaceStyle": "automatic",
     "splash": {
-      "image": "./assets/splash.png",
+      "image": "./assets/splash.jpg",
       "resizeMode": "contain",
       "backgroundColor": "#0F0F0F"
     },
