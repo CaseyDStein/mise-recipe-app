@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import {
   View, Text, StyleSheet, FlatList, SafeAreaView, TouchableOpacity,
   ActivityIndicator, Modal, KeyboardAvoidingView, Platform,
@@ -9,12 +9,14 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { collectionsApi } from '@/src/services/api';
 import { Button } from '@/src/components/Button';
 import { TextInput } from '@/src/components/TextInput';
-import { colors, spacing, typography, radius, shadows } from '@/src/lib/theme';
+import { useColors, spacing, typography, radius, shadows, Colors } from '@/src/lib/theme';
 import { useAuthStore } from '@/src/stores/authStore';
 
 type Collection = { id: string; name: string; description?: string; recipe_collections: { count: number }[] };
 
 export default function CollectionsScreen() {
+  const colors = useColors();
+  const styles = useMemo(() => createStyles(colors), [colors]);
   const [showCreate, setShowCreate] = useState(false);
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
@@ -111,38 +113,40 @@ export default function CollectionsScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  safe: { flex: 1, backgroundColor: colors.bg1 },
-  header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: spacing.lg },
-  title: { ...typography.displaySm, color: colors.text0 },
-  addButton: {
-    width: 40, height: 40, borderRadius: radius.full,
-    backgroundColor: colors.bg3, alignItems: 'center', justifyContent: 'center',
-  },
-  list: { paddingHorizontal: spacing.lg },
-  row: { gap: spacing.md, marginBottom: spacing.md },
-  collectionCard: {
-    flex: 1, backgroundColor: colors.bg2, borderRadius: radius.lg,
-    padding: spacing.md, gap: spacing.sm, ...shadows.sm,
-  },
-  collectionIcon: {
-    width: 52, height: 52, borderRadius: radius.md,
-    backgroundColor: colors.accentMuted, alignItems: 'center', justifyContent: 'center',
-  },
-  collectionName: { ...typography.titleMd, color: colors.text0 },
-  collectionCount: { ...typography.bodySm, color: colors.text2 },
-  empty: { flex: 1, alignItems: 'center', justifyContent: 'center', padding: spacing.xl, gap: spacing.md },
-  emptyTitle: { ...typography.titleLg, color: colors.text1, textAlign: 'center' },
-  emptyBody: { ...typography.bodyMd, color: colors.text2, textAlign: 'center' },
-  modalOverlay: { flex: 1, justifyContent: 'flex-end', backgroundColor: colors.overlay50 },
-  modalSheet: {
-    backgroundColor: colors.bg2, borderTopLeftRadius: radius.xl, borderTopRightRadius: radius.xl,
-    padding: spacing.lg, paddingTop: spacing.md, gap: spacing.md,
-  },
-  modalHandle: {
-    width: 40, height: 4, borderRadius: 2, backgroundColor: colors.bg4,
-    alignSelf: 'center', marginBottom: spacing.sm,
-  },
-  modalTitle: { ...typography.displaySm, color: colors.text0 },
-  modalActions: { flexDirection: 'row', gap: spacing.md, paddingTop: spacing.sm },
-});
+function createStyles(colors: Colors) {
+  return StyleSheet.create({
+    safe: { flex: 1, backgroundColor: colors.bg1 },
+    header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: spacing.lg },
+    title: { ...typography.displaySm, color: colors.text0 },
+    addButton: {
+      width: 40, height: 40, borderRadius: radius.full,
+      backgroundColor: colors.bg3, alignItems: 'center', justifyContent: 'center',
+    },
+    list: { paddingHorizontal: spacing.lg },
+    row: { gap: spacing.md, marginBottom: spacing.md },
+    collectionCard: {
+      flex: 1, backgroundColor: colors.bg2, borderRadius: radius.lg,
+      padding: spacing.md, gap: spacing.sm, ...shadows.sm,
+    },
+    collectionIcon: {
+      width: 52, height: 52, borderRadius: radius.md,
+      backgroundColor: colors.accentMuted, alignItems: 'center', justifyContent: 'center',
+    },
+    collectionName: { ...typography.titleMd, color: colors.text0 },
+    collectionCount: { ...typography.bodySm, color: colors.text2 },
+    empty: { flex: 1, alignItems: 'center', justifyContent: 'center', padding: spacing.xl, gap: spacing.md },
+    emptyTitle: { ...typography.titleLg, color: colors.text1, textAlign: 'center' },
+    emptyBody: { ...typography.bodyMd, color: colors.text2, textAlign: 'center' },
+    modalOverlay: { flex: 1, justifyContent: 'flex-end', backgroundColor: colors.overlay50 },
+    modalSheet: {
+      backgroundColor: colors.bg2, borderTopLeftRadius: radius.xl, borderTopRightRadius: radius.xl,
+      padding: spacing.lg, paddingTop: spacing.md, gap: spacing.md,
+    },
+    modalHandle: {
+      width: 40, height: 4, borderRadius: 2, backgroundColor: colors.bg4,
+      alignSelf: 'center', marginBottom: spacing.sm,
+    },
+    modalTitle: { ...typography.displaySm, color: colors.text0 },
+    modalActions: { flexDirection: 'row', gap: spacing.md, paddingTop: spacing.sm },
+  });
+}

@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { TouchableOpacity, Text, ActivityIndicator, StyleSheet, ViewStyle, TextStyle } from 'react-native';
-import { colors, spacing, radius, typography } from '@/src/lib/theme';
+import { useColors, spacing, radius, typography, Colors } from '@/src/lib/theme';
 
 interface ButtonProps {
   label: string;
@@ -14,6 +14,8 @@ interface ButtonProps {
 }
 
 export function Button({ label, onPress, variant = 'primary', size = 'md', loading, disabled, style, textStyle }: ButtonProps) {
+  const colors = useColors();
+  const styles = useMemo(() => createStyles(colors), [colors]);
   const isDisabled = disabled || loading;
 
   return (
@@ -31,22 +33,24 @@ export function Button({ label, onPress, variant = 'primary', size = 'md', loadi
   );
 }
 
-const styles = StyleSheet.create({
-  base: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', borderRadius: radius.md },
-  primary: { backgroundColor: colors.accent },
-  secondary: { backgroundColor: colors.bg3, borderWidth: 1, borderColor: colors.bg4 },
-  ghost: { backgroundColor: 'transparent' },
-  danger: { backgroundColor: 'rgba(255,59,48,0.15)', borderWidth: 1, borderColor: colors.error },
-  disabled: { opacity: 0.5 },
-  size_sm: { paddingHorizontal: spacing.md, paddingVertical: spacing.xs + 2, minHeight: 36 },
-  size_md: { paddingHorizontal: spacing.lg, paddingVertical: spacing.sm + 2, minHeight: 48 },
-  size_lg: { paddingHorizontal: spacing.xl, paddingVertical: spacing.md, minHeight: 56 },
-  label: { ...typography.titleMd },
-  label_primary: { color: colors.text0 },
-  label_secondary: { color: colors.text1 },
-  label_ghost: { color: colors.accent },
-  label_danger: { color: colors.error },
-  labelSize_sm: { fontSize: 13 },
-  labelSize_md: { fontSize: 15 },
-  labelSize_lg: { fontSize: 17 },
-});
+function createStyles(colors: Colors) {
+  return StyleSheet.create({
+    base: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', borderRadius: radius.md },
+    primary: { backgroundColor: colors.accent },
+    secondary: { backgroundColor: colors.bg3, borderWidth: 1, borderColor: colors.bg4 },
+    ghost: { backgroundColor: 'transparent' },
+    danger: { backgroundColor: 'rgba(255,59,48,0.15)', borderWidth: 1, borderColor: colors.error },
+    disabled: { opacity: 0.5 },
+    size_sm: { paddingHorizontal: spacing.md, paddingVertical: spacing.xs + 2, minHeight: 36 },
+    size_md: { paddingHorizontal: spacing.lg, paddingVertical: spacing.sm + 2, minHeight: 48 },
+    size_lg: { paddingHorizontal: spacing.xl, paddingVertical: spacing.md, minHeight: 56 },
+    label: { ...typography.titleMd },
+    label_primary: { color: colors.text0 },
+    label_secondary: { color: colors.text1 },
+    label_ghost: { color: colors.accent },
+    label_danger: { color: colors.error },
+    labelSize_sm: { fontSize: 13 },
+    labelSize_md: { fontSize: 15 },
+    labelSize_lg: { fontSize: 17 },
+  });
+}

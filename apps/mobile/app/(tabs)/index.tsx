@@ -1,14 +1,14 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import {
   View, Text, StyleSheet, FlatList, TouchableOpacity, RefreshControl,
-  SafeAreaView, ActivityIndicator, Platform,
+  SafeAreaView, ActivityIndicator,
 } from 'react-native';
 import { router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useQuery } from '@tanstack/react-query';
 import { recipesApi } from '@/src/services/api';
 import { RecipeCard } from '@/src/components/RecipeCard';
-import { colors, spacing, typography, radius } from '@/src/lib/theme';
+import { useColors, spacing, typography, radius, Colors } from '@/src/lib/theme';
 import { useAuthStore } from '@/src/stores/authStore';
 
 type Recipe = {
@@ -22,6 +22,8 @@ type Recipe = {
 };
 
 export default function HomeScreen() {
+  const colors = useColors();
+  const styles = useMemo(() => createStyles(colors), [colors]);
   const user = useAuthStore((s) => s.user);
   const { data, isLoading, refetch, isRefetching } = useQuery({
     queryKey: ['recipes'],
@@ -88,29 +90,31 @@ export default function HomeScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  safe: { flex: 1, backgroundColor: colors.bg1 },
-  list: { padding: spacing.lg, paddingTop: spacing.md },
-  header: { gap: spacing.lg, marginBottom: spacing.lg },
-  headerTop: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
-  greeting: { ...typography.displaySm, color: colors.text0 },
-  subGreeting: { ...typography.bodyMd, color: colors.text2, marginTop: 2 },
-  addButton: {
-    width: 48, height: 48, borderRadius: radius.full,
-    backgroundColor: colors.accent, alignItems: 'center', justifyContent: 'center',
-  },
-  sectionTitle: { ...typography.titleSm, color: colors.text2, textTransform: 'uppercase', letterSpacing: 1 },
-  emptyCard: {
-    backgroundColor: colors.bg2, borderRadius: radius.xl,
-    padding: spacing.xl, alignItems: 'center', gap: spacing.md,
-    borderWidth: 1, borderColor: colors.bg4, borderStyle: 'dashed',
-  },
-  emptyTitle: { ...typography.titleLg, color: colors.text0 },
-  emptyBody: { ...typography.bodyMd, color: colors.text2, textAlign: 'center' },
-  emptyChip: {
-    flexDirection: 'row', alignItems: 'center', gap: spacing.xs,
-    backgroundColor: colors.accentMuted, paddingHorizontal: spacing.md,
-    paddingVertical: spacing.xs, borderRadius: radius.full,
-  },
-  emptyChipText: { ...typography.titleSm, color: colors.accent },
-});
+function createStyles(colors: Colors) {
+  return StyleSheet.create({
+    safe: { flex: 1, backgroundColor: colors.bg1 },
+    list: { padding: spacing.lg, paddingTop: spacing.md },
+    header: { gap: spacing.lg, marginBottom: spacing.lg },
+    headerTop: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
+    greeting: { ...typography.displaySm, color: colors.text0 },
+    subGreeting: { ...typography.bodyMd, color: colors.text2, marginTop: 2 },
+    addButton: {
+      width: 48, height: 48, borderRadius: radius.full,
+      backgroundColor: colors.accent, alignItems: 'center', justifyContent: 'center',
+    },
+    sectionTitle: { ...typography.titleSm, color: colors.text2, textTransform: 'uppercase', letterSpacing: 1 },
+    emptyCard: {
+      backgroundColor: colors.bg2, borderRadius: radius.xl,
+      padding: spacing.xl, alignItems: 'center', gap: spacing.md,
+      borderWidth: 1, borderColor: colors.bg4, borderStyle: 'dashed',
+    },
+    emptyTitle: { ...typography.titleLg, color: colors.text0 },
+    emptyBody: { ...typography.bodyMd, color: colors.text2, textAlign: 'center' },
+    emptyChip: {
+      flexDirection: 'row', alignItems: 'center', gap: spacing.xs,
+      backgroundColor: colors.accentMuted, paddingHorizontal: spacing.md,
+      paddingVertical: spacing.xs, borderRadius: radius.full,
+    },
+    emptyChipText: { ...typography.titleSm, color: colors.accent },
+  });
+}

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import {
   View, Text, StyleSheet, ScrollView, TouchableOpacity,
   SafeAreaView, Image, Alert, ActivityIndicator,
@@ -7,7 +7,7 @@ import { router, useLocalSearchParams } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { recipesApi } from '@/src/services/api';
-import { colors, spacing, typography, radius, shadows } from '@/src/lib/theme';
+import { useColors, spacing, typography, radius, shadows, Colors } from '@/src/lib/theme';
 
 type Ingredient = { id: string; text: string; quantity?: string; unit?: string };
 type Step = { id: string; order_num: number; text: string };
@@ -24,6 +24,8 @@ type Recipe = {
 };
 
 export default function RecipeScreen() {
+  const colors = useColors();
+  const styles = useMemo(() => createStyles(colors), [colors]);
   const { id } = useLocalSearchParams<{ id: string }>();
   const queryClient = useQueryClient();
   const [completedSteps, setCompletedSteps] = useState<Set<number>>(new Set());
@@ -99,7 +101,6 @@ export default function RecipeScreen() {
         )}
 
         <View style={styles.body}>
-          {/* Title & meta */}
           <View style={styles.titleSection}>
             {recipe.cuisine && (
               <View style={styles.cuisineChip}>
@@ -110,7 +111,6 @@ export default function RecipeScreen() {
             {recipe.description && <Text style={styles.description}>{recipe.description}</Text>}
           </View>
 
-          {/* Time & servings row */}
           {(times.length > 0 || recipe.servings) && (
             <View style={styles.statsRow}>
               {times.map((t) => (
@@ -128,7 +128,6 @@ export default function RecipeScreen() {
             </View>
           )}
 
-          {/* Ingredients */}
           {recipe.ingredients.length > 0 && (
             <View style={styles.section}>
               <Text style={styles.sectionTitle}>Ingredients</Text>
@@ -143,7 +142,6 @@ export default function RecipeScreen() {
             </View>
           )}
 
-          {/* Steps */}
           {recipe.steps.length > 0 && (
             <View style={styles.section}>
               <Text style={styles.sectionTitle}>Instructions</Text>
@@ -171,7 +169,6 @@ export default function RecipeScreen() {
             </View>
           )}
 
-          {/* Nutritional info */}
           {recipe.nutritionalInfo && (
             <View style={styles.section}>
               <Text style={styles.sectionTitle}>Nutrition</Text>
@@ -196,7 +193,6 @@ export default function RecipeScreen() {
             </View>
           )}
 
-          {/* Source link */}
           <View style={styles.sourceRow}>
             <Ionicons name="link-outline" size={14} color={colors.text3} />
             <Text style={styles.sourceText} numberOfLines={1}>{recipe.source_url}</Text>
@@ -214,80 +210,82 @@ function formatTime(minutes: number) {
   return m > 0 ? `${h}h ${m}m` : `${h}h`;
 }
 
-const styles = StyleSheet.create({
-  safe: { flex: 1, backgroundColor: colors.bg1 },
-  loading: { flex: 1, backgroundColor: colors.bg1, alignItems: 'center', justifyContent: 'center' },
-  imageContainer: { position: 'relative', height: 280 },
-  image: { width: '100%', height: '100%' },
-  backButton: {
-    position: 'absolute', top: spacing.lg, left: spacing.lg,
-    width: 40, height: 40, borderRadius: radius.full,
-    backgroundColor: colors.overlay50, alignItems: 'center', justifyContent: 'center',
-  },
-  deleteButton: {
-    position: 'absolute', top: spacing.lg, right: spacing.lg,
-    width: 40, height: 40, borderRadius: radius.full,
-    backgroundColor: colors.overlay50, alignItems: 'center', justifyContent: 'center',
-  },
-  navBar: {
-    flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
-    paddingHorizontal: spacing.lg, paddingVertical: spacing.md,
-  },
-  navButton: {
-    width: 40, height: 40, borderRadius: radius.full,
-    backgroundColor: colors.bg2, alignItems: 'center', justifyContent: 'center',
-  },
-  body: { padding: spacing.lg, gap: spacing.xl },
-  titleSection: { gap: spacing.sm },
-  cuisineChip: {
-    alignSelf: 'flex-start', backgroundColor: colors.accentMuted,
-    paddingHorizontal: spacing.md, paddingVertical: 4, borderRadius: radius.full,
-  },
-  cuisineChipText: { ...typography.caption, color: colors.accent, fontWeight: '700' },
-  title: { ...typography.displayMd, color: colors.text0 },
-  description: { ...typography.bodyLg, color: colors.text2, lineHeight: 26 },
-  statsRow: { flexDirection: 'row', gap: spacing.md },
-  statCard: {
-    flex: 1, backgroundColor: colors.bg2, borderRadius: radius.md,
-    padding: spacing.md, alignItems: 'center', gap: 2,
-  },
-  statValue: { ...typography.titleLg, color: colors.text0 },
-  statLabel: { ...typography.caption, color: colors.text2 },
-  section: { gap: spacing.md },
-  sectionTitle: { ...typography.titleLg, color: colors.text0 },
-  ingredientsList: { gap: spacing.sm },
-  ingredientRow: { flexDirection: 'row', alignItems: 'flex-start', gap: spacing.md },
-  ingredientDot: {
-    width: 6, height: 6, borderRadius: 3,
-    backgroundColor: colors.accent, marginTop: 7,
-  },
-  ingredientText: { ...typography.bodyLg, color: colors.text1, flex: 1, lineHeight: 26 },
-  stepsList: { gap: spacing.md },
-  stepCard: {
-    flexDirection: 'row', gap: spacing.md, backgroundColor: colors.bg2,
-    borderRadius: radius.lg, padding: spacing.md, ...shadows.sm,
-  },
-  stepCardDone: { opacity: 0.6 },
-  stepNumber: {
-    width: 28, height: 28, borderRadius: radius.full,
-    backgroundColor: colors.accent, alignItems: 'center', justifyContent: 'center',
-    flexShrink: 0, marginTop: 2,
-  },
-  stepNumberDone: { backgroundColor: colors.success },
-  stepNumberText: { ...typography.titleSm, color: colors.text0 },
-  stepText: { ...typography.bodyLg, color: colors.text1, flex: 1, lineHeight: 26 },
-  stepTextDone: { textDecorationLine: 'line-through', color: colors.text3 },
-  servingSize: { ...typography.bodyMd, color: colors.text2, marginBottom: spacing.xs },
-  nutritionGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.md },
-  nutritionCard: {
-    backgroundColor: colors.bg2, borderRadius: radius.md,
-    padding: spacing.md, alignItems: 'center', minWidth: '28%', gap: 2,
-  },
-  nutritionValue: { ...typography.titleLg, color: colors.text0 },
-  nutritionLabel: { ...typography.caption, color: colors.text2 },
-  sourceRow: {
-    flexDirection: 'row', alignItems: 'center', gap: spacing.xs,
-    paddingTop: spacing.sm,
-  },
-  sourceText: { ...typography.bodySm, color: colors.text3, flex: 1 },
-});
+function createStyles(colors: Colors) {
+  return StyleSheet.create({
+    safe: { flex: 1, backgroundColor: colors.bg1 },
+    loading: { flex: 1, backgroundColor: colors.bg1, alignItems: 'center', justifyContent: 'center' },
+    imageContainer: { position: 'relative', height: 280 },
+    image: { width: '100%', height: '100%' },
+    backButton: {
+      position: 'absolute', top: spacing.lg, left: spacing.lg,
+      width: 40, height: 40, borderRadius: radius.full,
+      backgroundColor: colors.overlay50, alignItems: 'center', justifyContent: 'center',
+    },
+    deleteButton: {
+      position: 'absolute', top: spacing.lg, right: spacing.lg,
+      width: 40, height: 40, borderRadius: radius.full,
+      backgroundColor: colors.overlay50, alignItems: 'center', justifyContent: 'center',
+    },
+    navBar: {
+      flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
+      paddingHorizontal: spacing.lg, paddingVertical: spacing.md,
+    },
+    navButton: {
+      width: 40, height: 40, borderRadius: radius.full,
+      backgroundColor: colors.bg2, alignItems: 'center', justifyContent: 'center',
+    },
+    body: { padding: spacing.lg, gap: spacing.xl },
+    titleSection: { gap: spacing.sm },
+    cuisineChip: {
+      alignSelf: 'flex-start', backgroundColor: colors.accentMuted,
+      paddingHorizontal: spacing.md, paddingVertical: 4, borderRadius: radius.full,
+    },
+    cuisineChipText: { ...typography.caption, color: colors.accent, fontWeight: '700' },
+    title: { ...typography.displayMd, color: colors.text0 },
+    description: { ...typography.bodyLg, color: colors.text2, lineHeight: 26 },
+    statsRow: { flexDirection: 'row', gap: spacing.md },
+    statCard: {
+      flex: 1, backgroundColor: colors.bg2, borderRadius: radius.md,
+      padding: spacing.md, alignItems: 'center', gap: 2,
+    },
+    statValue: { ...typography.titleLg, color: colors.text0 },
+    statLabel: { ...typography.caption, color: colors.text2 },
+    section: { gap: spacing.md },
+    sectionTitle: { ...typography.titleLg, color: colors.text0 },
+    ingredientsList: { gap: spacing.sm },
+    ingredientRow: { flexDirection: 'row', alignItems: 'flex-start', gap: spacing.md },
+    ingredientDot: {
+      width: 6, height: 6, borderRadius: 3,
+      backgroundColor: colors.accent, marginTop: 7,
+    },
+    ingredientText: { ...typography.bodyLg, color: colors.text1, flex: 1, lineHeight: 26 },
+    stepsList: { gap: spacing.md },
+    stepCard: {
+      flexDirection: 'row', gap: spacing.md, backgroundColor: colors.bg2,
+      borderRadius: radius.lg, padding: spacing.md, ...shadows.sm,
+    },
+    stepCardDone: { opacity: 0.6 },
+    stepNumber: {
+      width: 28, height: 28, borderRadius: radius.full,
+      backgroundColor: colors.accent, alignItems: 'center', justifyContent: 'center',
+      flexShrink: 0, marginTop: 2,
+    },
+    stepNumberDone: { backgroundColor: colors.success },
+    stepNumberText: { ...typography.titleSm, color: colors.text0 },
+    stepText: { ...typography.bodyLg, color: colors.text1, flex: 1, lineHeight: 26 },
+    stepTextDone: { textDecorationLine: 'line-through', color: colors.text3 },
+    servingSize: { ...typography.bodyMd, color: colors.text2, marginBottom: spacing.xs },
+    nutritionGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.md },
+    nutritionCard: {
+      backgroundColor: colors.bg2, borderRadius: radius.md,
+      padding: spacing.md, alignItems: 'center', minWidth: '28%', gap: 2,
+    },
+    nutritionValue: { ...typography.titleLg, color: colors.text0 },
+    nutritionLabel: { ...typography.caption, color: colors.text2 },
+    sourceRow: {
+      flexDirection: 'row', alignItems: 'center', gap: spacing.xs,
+      paddingTop: spacing.sm,
+    },
+    sourceText: { ...typography.bodySm, color: colors.text3, flex: 1 },
+  });
+}

@@ -2,10 +2,12 @@ import { Tabs, Redirect } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { View, StyleSheet, Platform } from 'react-native';
 import { useAuthStore } from '@/src/stores/authStore';
-import { colors, radius } from '@/src/lib/theme';
+import { useColors, radius } from '@/src/lib/theme';
 
 export default function TabsLayout() {
   const { token, loading } = useAuthStore();
+  const colors = useColors();
+
   if (!loading && !token) return <Redirect href="/(auth)/login" />;
 
   return (
@@ -16,7 +18,9 @@ export default function TabsLayout() {
         tabBarActiveTintColor: colors.accent,
         tabBarInactiveTintColor: colors.text3,
         tabBarShowLabel: false,
-        tabBarBackground: () => <View style={styles.tabBarBg} />,
+        tabBarBackground: () => (
+          <View style={[styles.tabBarBg, { backgroundColor: colors.bg2, borderTopColor: colors.bg4 }]} />
+        ),
       }}
     >
       <Tabs.Screen
@@ -50,8 +54,6 @@ const styles = StyleSheet.create({
   },
   tabBarBg: {
     flex: 1,
-    backgroundColor: colors.bg2,
     borderTopWidth: 1,
-    borderTopColor: colors.bg4,
   },
 });

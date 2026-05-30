@@ -8,7 +8,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useAuthStore } from '@/src/stores/authStore';
 import { Button } from '@/src/components/Button';
 import { TextInput } from '@/src/components/TextInput';
-import { colors, spacing, typography } from '@/src/lib/theme';
+import { darkColors as colors, spacing, typography } from '@/src/lib/theme';
 
 export default function SignUpScreen() {
   const [firstName, setFirstName] = useState('');

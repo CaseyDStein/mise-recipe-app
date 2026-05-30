@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import {
   View, Text, StyleSheet, SafeAreaView, TouchableOpacity, Alert,
   ScrollView, KeyboardAvoidingView, Platform,
@@ -9,9 +9,11 @@ import { useQuery } from '@tanstack/react-query';
 import { recipesApi, collectionsApi } from '@/src/services/api';
 import { Button } from '@/src/components/Button';
 import { TextInput } from '@/src/components/TextInput';
-import { colors, spacing, typography, radius } from '@/src/lib/theme';
+import { useColors, spacing, typography, radius, Colors } from '@/src/lib/theme';
 
 export default function ProfileScreen() {
+  const colors = useColors();
+  const styles = useMemo(() => createStyles(colors), [colors]);
   const { user, signOut, updateProfile } = useAuthStore();
   const { data: recipes } = useQuery({ queryKey: ['recipes'], queryFn: () => recipesApi.list() });
   const { data: collections } = useQuery({ queryKey: ['collections'], queryFn: collectionsApi.list });
@@ -76,25 +78,17 @@ export default function ProfileScreen() {
           <View style={styles.section}>
             <Text style={styles.sectionTitle}>Profile</Text>
             <TextInput
-              label="First Name"
-              placeholder="Enter your first name"
-              value={firstName}
-              onChangeText={setFirstName}
-              autoCapitalize="words"
-              returnKeyType="next"
+              label="First Name" placeholder="Enter your first name"
+              value={firstName} onChangeText={setFirstName}
+              autoCapitalize="words" returnKeyType="next"
             />
             <TextInput
-              label="Last Name"
-              placeholder="Enter your last name"
-              value={lastName}
-              onChangeText={setLastName}
-              autoCapitalize="words"
-              returnKeyType="done"
+              label="Last Name" placeholder="Enter your last name"
+              value={lastName} onChangeText={setLastName}
+              autoCapitalize="words" returnKeyType="done"
               onSubmitEditing={isDirty ? handleSave : undefined}
             />
-            {isDirty && (
-              <Button label="Save Changes" onPress={handleSave} loading={saving} />
-            )}
+            {isDirty && <Button label="Save Changes" onPress={handleSave} loading={saving} />}
           </View>
 
           <View style={styles.section}>
@@ -113,29 +107,31 @@ export default function ProfileScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  safe: { flex: 1, backgroundColor: colors.bg1 },
-  container: { flexGrow: 1, padding: spacing.lg, gap: spacing.xl },
-  header: { alignItems: 'center', gap: spacing.md, paddingTop: spacing.lg },
-  avatar: {
-    width: 80, height: 80, borderRadius: radius.full,
-    backgroundColor: colors.accentMuted, alignItems: 'center', justifyContent: 'center',
-  },
-  avatarText: { ...typography.displayMd, color: colors.accent },
-  email: { ...typography.bodyLg, color: colors.text1 },
-  statsRow: { flexDirection: 'row', gap: spacing.md },
-  statCard: {
-    flex: 1, backgroundColor: colors.bg2, borderRadius: radius.lg,
-    padding: spacing.lg, alignItems: 'center', gap: spacing.xs,
-  },
-  statValue: { ...typography.displaySm, color: colors.text0 },
-  statLabel: { ...typography.bodySm, color: colors.text2 },
-  section: { gap: spacing.sm },
-  sectionTitle: { ...typography.label, color: colors.text3 },
-  menuItem: {
-    flexDirection: 'row', alignItems: 'center', gap: spacing.md,
-    backgroundColor: colors.bg2, borderRadius: radius.md, padding: spacing.md,
-  },
-  menuItemText: { ...typography.bodyLg, color: colors.text1 },
-  version: { ...typography.caption, color: colors.text3, textAlign: 'center', marginTop: 'auto' },
-});
+function createStyles(colors: Colors) {
+  return StyleSheet.create({
+    safe: { flex: 1, backgroundColor: colors.bg1 },
+    container: { flexGrow: 1, padding: spacing.lg, gap: spacing.xl },
+    header: { alignItems: 'center', gap: spacing.md, paddingTop: spacing.lg },
+    avatar: {
+      width: 80, height: 80, borderRadius: radius.full,
+      backgroundColor: colors.accentMuted, alignItems: 'center', justifyContent: 'center',
+    },
+    avatarText: { ...typography.displayMd, color: colors.accent },
+    email: { ...typography.bodyLg, color: colors.text1 },
+    statsRow: { flexDirection: 'row', gap: spacing.md },
+    statCard: {
+      flex: 1, backgroundColor: colors.bg2, borderRadius: radius.lg,
+      padding: spacing.lg, alignItems: 'center', gap: spacing.xs,
+    },
+    statValue: { ...typography.displaySm, color: colors.text0 },
+    statLabel: { ...typography.bodySm, color: colors.text2 },
+    section: { gap: spacing.sm },
+    sectionTitle: { ...typography.label, color: colors.text3 },
+    menuItem: {
+      flexDirection: 'row', alignItems: 'center', gap: spacing.md,
+      backgroundColor: colors.bg2, borderRadius: radius.md, padding: spacing.md,
+    },
+    menuItemText: { ...typography.bodyLg, color: colors.text1 },
+    version: { ...typography.caption, color: colors.text3, textAlign: 'center', marginTop: 'auto' },
+  });
+}

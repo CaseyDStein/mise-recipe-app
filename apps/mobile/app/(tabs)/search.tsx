@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useMemo } from 'react';
 import {
   View, Text, StyleSheet, FlatList, SafeAreaView, ActivityIndicator,
   TouchableOpacity,
@@ -9,7 +9,7 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { recipesApi, tagsApi } from '@/src/services/api';
 import { RecipeCard } from '@/src/components/RecipeCard';
 import { TextInput } from '@/src/components/TextInput';
-import { colors, spacing, typography, radius } from '@/src/lib/theme';
+import { useColors, spacing, typography, radius, Colors } from '@/src/lib/theme';
 import { useDebounce } from '@/src/hooks/useDebounce';
 import { useAuthStore } from '@/src/stores/authStore';
 
@@ -17,6 +17,8 @@ type Recipe = { id: string; title: string; image_url?: string; total_time_minute
 type Tag = { id: string; name: string; recipe_tags: { count: number }[] };
 
 export default function SearchScreen() {
+  const colors = useColors();
+  const styles = useMemo(() => createStyles(colors), [colors]);
   const [query, setQuery] = useState('');
   const [selectedTag, setSelectedTag] = useState<string | null>(null);
   const debouncedQuery = useDebounce(query, 300);
@@ -52,7 +54,7 @@ export default function SearchScreen() {
     setSelectedTag((prev) => (prev === name ? null : name));
   }
 
-return (
+  return (
     <SafeAreaView style={styles.safe}>
       <FlatList
         data={recipes}
@@ -167,54 +169,51 @@ return (
   );
 }
 
-const styles = StyleSheet.create({
-  safe: { flex: 1, backgroundColor: colors.bg1 },
-  header: { paddingTop: spacing.md, gap: spacing.md },
-  title: { ...typography.displaySm, color: colors.text0 },
-  list: { padding: spacing.lg, paddingTop: spacing.md },
-
-  tagsSection: { gap: spacing.sm },
-  tagsHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
-  tagsLabel: { ...typography.label, color: colors.text3 },
-  clearLink: { ...typography.titleSm, color: colors.accent },
-  tagsList: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm },
-
-  tagChip: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 4,
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.xs + 2,
-    borderRadius: radius.full,
-    backgroundColor: colors.bg3,
-    borderWidth: 1,
-    borderColor: colors.bg4,
-  },
-  tagChipActive: {
-    backgroundColor: colors.accent,
-    borderColor: colors.accent,
-  },
-  tagCheck: { marginRight: 1 },
-  tagChipText: { ...typography.titleSm, color: colors.text2 },
-  tagChipTextActive: { color: colors.text0 },
-  tagCount: {
-    ...typography.caption,
-    color: colors.text3,
-    backgroundColor: colors.bg4,
-    paddingHorizontal: 5,
-    paddingVertical: 1,
-    borderRadius: radius.full,
-    overflow: 'hidden',
-  },
-  tagCountActive: { color: colors.accentMuted, backgroundColor: 'rgba(255,255,255,0.2)' },
-
-  resultsRow: {},
-  resultsText: { ...typography.bodySm, color: colors.text2 },
-
-  loader: { marginTop: spacing.xl },
-  recipeListSpacer: { height: spacing.md },
-
-  empty: { alignItems: 'center', paddingVertical: spacing.xxxl, gap: spacing.md },
-  emptyTitle: { ...typography.titleLg, color: colors.text1, textAlign: 'center' },
-  emptyBody: { ...typography.bodyMd, color: colors.text2, textAlign: 'center' },
-});
+function createStyles(colors: Colors) {
+  return StyleSheet.create({
+    safe: { flex: 1, backgroundColor: colors.bg1 },
+    header: { paddingTop: spacing.md, gap: spacing.md },
+    title: { ...typography.displaySm, color: colors.text0 },
+    list: { padding: spacing.lg, paddingTop: spacing.md },
+    tagsSection: { gap: spacing.sm },
+    tagsHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
+    tagsLabel: { ...typography.label, color: colors.text3 },
+    clearLink: { ...typography.titleSm, color: colors.accent },
+    tagsList: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm },
+    tagChip: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 4,
+      paddingHorizontal: spacing.md,
+      paddingVertical: spacing.xs + 2,
+      borderRadius: radius.full,
+      backgroundColor: colors.bg3,
+      borderWidth: 1,
+      borderColor: colors.bg4,
+    },
+    tagChipActive: {
+      backgroundColor: colors.accent,
+      borderColor: colors.accent,
+    },
+    tagCheck: { marginRight: 1 },
+    tagChipText: { ...typography.titleSm, color: colors.text2 },
+    tagChipTextActive: { color: colors.text0 },
+    tagCount: {
+      ...typography.caption,
+      color: colors.text3,
+      backgroundColor: colors.bg4,
+      paddingHorizontal: 5,
+      paddingVertical: 1,
+      borderRadius: radius.full,
+      overflow: 'hidden',
+    },
+    tagCountActive: { color: colors.accentMuted, backgroundColor: 'rgba(255,255,255,0.2)' },
+    resultsRow: {},
+    resultsText: { ...typography.bodySm, color: colors.text2 },
+    loader: { marginTop: spacing.xl },
+    recipeListSpacer: { height: spacing.md },
+    empty: { alignItems: 'center', paddingVertical: spacing.xxxl, gap: spacing.md },
+    emptyTitle: { ...typography.titleLg, color: colors.text1, textAlign: 'center' },
+    emptyBody: { ...typography.bodyMd, color: colors.text2, textAlign: 'center' },
+  });
+}

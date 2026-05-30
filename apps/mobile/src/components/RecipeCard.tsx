@@ -1,7 +1,7 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { colors, spacing, radius, typography, shadows } from '@/src/lib/theme';
+import { useColors, spacing, radius, typography, shadows, Colors } from '@/src/lib/theme';
 
 interface RecipeCardProps {
   id: string;
@@ -15,6 +15,9 @@ interface RecipeCardProps {
 }
 
 export function RecipeCard({ title, imageUrl, totalTimeMinutes, servings, cuisine, onPress }: RecipeCardProps) {
+  const colors = useColors();
+  const styles = useMemo(() => createStyles(colors), [colors]);
+
   return (
     <TouchableOpacity style={styles.card} onPress={onPress} activeOpacity={0.9}>
       {imageUrl && (
@@ -61,38 +64,40 @@ function formatTime(minutes: number) {
   return m > 0 ? `${h}h ${m}m` : `${h}h`;
 }
 
-const styles = StyleSheet.create({
-  card: {
-    backgroundColor: colors.bg2,
-    borderRadius: radius.lg,
-    overflow: 'hidden',
-    ...shadows.sm,
-  },
-  imageContainer: { position: 'relative', height: 180 },
-  image: { width: '100%', height: '100%' },
-  timeBadge: {
-    position: 'absolute',
-    bottom: spacing.sm,
-    right: spacing.sm,
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 3,
-    backgroundColor: colors.overlay80,
-    paddingHorizontal: spacing.sm,
-    paddingVertical: 4,
-    borderRadius: radius.full,
-  },
-  timeBadgeText: { ...typography.caption, color: colors.text1, fontWeight: '600' },
-  content: { padding: spacing.md, gap: spacing.xs },
-  title: { ...typography.titleMd, color: colors.text0 },
-  meta: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm, flexWrap: 'wrap' },
-  metaChip: {
-    backgroundColor: colors.accentMuted,
-    paddingHorizontal: spacing.sm,
-    paddingVertical: 2,
-    borderRadius: radius.full,
-  },
-  metaChipText: { ...typography.caption, color: colors.accent, fontWeight: '600' },
-  metaRow: { flexDirection: 'row', alignItems: 'center', gap: 3 },
-  metaText: { ...typography.caption, color: colors.text2 },
-});
+function createStyles(colors: Colors) {
+  return StyleSheet.create({
+    card: {
+      backgroundColor: colors.bg2,
+      borderRadius: radius.lg,
+      overflow: 'hidden',
+      ...shadows.sm,
+    },
+    imageContainer: { position: 'relative', height: 180 },
+    image: { width: '100%', height: '100%' },
+    timeBadge: {
+      position: 'absolute',
+      bottom: spacing.sm,
+      right: spacing.sm,
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 3,
+      backgroundColor: colors.overlay80,
+      paddingHorizontal: spacing.sm,
+      paddingVertical: 4,
+      borderRadius: radius.full,
+    },
+    timeBadgeText: { ...typography.caption, color: colors.text1, fontWeight: '600' },
+    content: { padding: spacing.md, gap: spacing.xs },
+    title: { ...typography.titleMd, color: colors.text0 },
+    meta: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm, flexWrap: 'wrap' },
+    metaChip: {
+      backgroundColor: colors.accentMuted,
+      paddingHorizontal: spacing.sm,
+      paddingVertical: 2,
+      borderRadius: radius.full,
+    },
+    metaChipText: { ...typography.caption, color: colors.accent, fontWeight: '600' },
+    metaRow: { flexDirection: 'row', alignItems: 'center', gap: 3 },
+    metaText: { ...typography.caption, color: colors.text2 },
+  });
+}

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import {
   View, Text, StyleSheet, KeyboardAvoidingView, Platform,
   ScrollView, SafeAreaView, TouchableOpacity, ActivityIndicator,
@@ -9,7 +9,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { recipesApi } from '@/src/services/api';
 import { Button } from '@/src/components/Button';
 import { TextInput } from '@/src/components/TextInput';
-import { colors, spacing, typography, radius } from '@/src/lib/theme';
+import { useColors, spacing, typography, radius, Colors } from '@/src/lib/theme';
 
 const EXAMPLE_URLS = [
   'https://www.allrecipes.com/recipe/...',
@@ -19,6 +19,8 @@ const EXAMPLE_URLS = [
 ];
 
 export default function ImportScreen() {
+  const colors = useColors();
+  const styles = useMemo(() => createStyles(colors), [colors]);
   const { url: sharedUrl } = useLocalSearchParams<{ url?: string }>();
   const [url, setUrl] = useState(sharedUrl ?? '');
   const [error, setError] = useState('');
@@ -44,7 +46,6 @@ export default function ImportScreen() {
     importMutation.mutate(target);
   }
 
-  // Auto-import when the screen is opened from a share action.
   useEffect(() => {
     if (sharedUrl && !autoImported.current) {
       autoImported.current = true;
@@ -100,12 +101,7 @@ export default function ImportScreen() {
               error={error}
             />
             {!importMutation.isPending && (
-              <Button
-                label="Import Recipe"
-                onPress={() => handleImport()}
-                loading={importMutation.isPending}
-                size="lg"
-              />
+              <Button label="Import Recipe" onPress={() => handleImport()} loading={importMutation.isPending} size="lg" />
             )}
           </View>
 
@@ -136,27 +132,29 @@ export default function ImportScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  safe: { flex: 1, backgroundColor: colors.bg1 },
-  container: { flexGrow: 1, padding: spacing.lg, gap: spacing.xl },
-  topBar: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
-  topBarTitle: { ...typography.titleLg, color: colors.text0 },
-  hero: { alignItems: 'center', gap: spacing.md, paddingVertical: spacing.lg },
-  heroIcon: {
-    width: 80, height: 80, borderRadius: radius.xl,
-    backgroundColor: colors.accentMuted, alignItems: 'center', justifyContent: 'center',
-  },
-  heroTitle: { ...typography.displaySm, color: colors.text0, textAlign: 'center' },
-  heroBody: { ...typography.bodyLg, color: colors.text2, textAlign: 'center', lineHeight: 26 },
-  inputSection: { gap: spacing.md },
-  loadingCard: {
-    flexDirection: 'row', gap: spacing.md, alignItems: 'center',
-    backgroundColor: colors.bg2, borderRadius: radius.lg, padding: spacing.md,
-  },
-  loadingTitle: { ...typography.titleSm, color: colors.text0 },
-  loadingBody: { ...typography.bodySm, color: colors.text2 },
-  examples: { gap: spacing.sm },
-  examplesTitle: { ...typography.titleSm, color: colors.text2, marginBottom: spacing.xs },
-  exampleRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm },
-  exampleText: { ...typography.bodySm, color: colors.text3, flex: 1 },
-});
+function createStyles(colors: Colors) {
+  return StyleSheet.create({
+    safe: { flex: 1, backgroundColor: colors.bg1 },
+    container: { flexGrow: 1, padding: spacing.lg, gap: spacing.xl },
+    topBar: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
+    topBarTitle: { ...typography.titleLg, color: colors.text0 },
+    hero: { alignItems: 'center', gap: spacing.md, paddingVertical: spacing.lg },
+    heroIcon: {
+      width: 80, height: 80, borderRadius: radius.xl,
+      backgroundColor: colors.accentMuted, alignItems: 'center', justifyContent: 'center',
+    },
+    heroTitle: { ...typography.displaySm, color: colors.text0, textAlign: 'center' },
+    heroBody: { ...typography.bodyLg, color: colors.text2, textAlign: 'center', lineHeight: 26 },
+    inputSection: { gap: spacing.md },
+    loadingCard: {
+      flexDirection: 'row', gap: spacing.md, alignItems: 'center',
+      backgroundColor: colors.bg2, borderRadius: radius.lg, padding: spacing.md,
+    },
+    loadingTitle: { ...typography.titleSm, color: colors.text0 },
+    loadingBody: { ...typography.bodySm, color: colors.text2 },
+    examples: { gap: spacing.sm },
+    examplesTitle: { ...typography.titleSm, color: colors.text2, marginBottom: spacing.xs },
+    exampleRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm },
+    exampleText: { ...typography.bodySm, color: colors.text3, flex: 1 },
+  });
+}
