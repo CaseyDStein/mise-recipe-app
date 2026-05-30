@@ -61,6 +61,7 @@ const styles = StyleSheet.create({
     paddingVertical: 0,
     height: 48,
     textAlignVertical: 'center',
+    includeFontPadding: false,
   },
   inputWithLeft: { paddingLeft: spacing.xs },
   inputWithRight: { paddingRight: spacing.xs },
