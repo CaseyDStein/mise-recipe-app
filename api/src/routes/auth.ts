@@ -2,8 +2,12 @@ import { Router } from 'express';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { z } from 'zod';
+import crypto from 'crypto';
+import { Resend } from 'resend';
 import { supabase } from '../lib/supabase';
 import { requireAuth, AuthenticatedRequest } from '../middleware/auth';
+
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 export const authRouter = Router();
 
@@ -99,6 +103,84 @@ authRouter.get('/me', requireAuth, async (req, res) => {
 
   if (!user) return res.status(404).json({ error: 'User not found' });
   res.json({ user: formatUser(user) });
+});
+
+// POST /api/auth/forgot-password
+authRouter.post('/forgot-password', async (req, res) => {
+  const parsed = z.object({ email: z.string().email() }).safeParse(req.body);
+  if (!parsed.success) return res.status(400).json({ error: 'Valid email required' });
+
+  // Always return 200 — don't reveal whether the email exists
+  const { data: user } = await supabase
+    .from('users')
+    .select('id, email, first_name')
+    .eq('email', parsed.data.email.toLowerCase())
+    .maybeSingle();
+
+  if (user) {
+    const token = crypto.randomBytes(32).toString('hex');
+    const expiresAt = new Date(Date.now() + 60 * 60 * 1000); // 1 hour
+
+    await supabase.from('password_reset_tokens').insert({
+      user_id: user.id,
+      token,
+      expires_at: expiresAt.toISOString(),
+    });
+
+    const resetLink = `mise://reset-password?token=${token}`;
+    const fromEmail = process.env.EMAIL_FROM ?? 'noreply@therecipeorganizer.app';
+
+    await resend.emails.send({
+      from: fromEmail,
+      to: user.email,
+      subject: 'Reset your password',
+      html: `
+        <p>Hi ${user.first_name ?? 'there'},</p>
+        <p>Tap the link below to reset your password. It expires in 1 hour.</p>
+        <p><a href="${resetLink}">Reset password</a></p>
+        <p>If you didn't request this, you can safely ignore this email.</p>
+      `,
+    });
+  }
+
+  res.json({ message: 'If that email is registered you will receive a reset link shortly' });
+});
+
+// POST /api/auth/reset-password
+authRouter.post('/reset-password', async (req, res) => {
+  const parsed = z.object({
+    token: z.string().min(1),
+    password: z.string().min(8),
+  }).safeParse(req.body);
+  if (!parsed.success) return res.status(400).json({ error: 'Token and password (min 8 chars) required' });
+
+  const { token, password } = parsed.data;
+
+  const { data: record } = await supabase
+    .from('password_reset_tokens')
+    .select('id, user_id, expires_at, used_at')
+    .eq('token', token)
+    .maybeSingle();
+
+  if (!record) return res.status(400).json({ error: 'Invalid or expired reset link' });
+  if (record.used_at) return res.status(400).json({ error: 'This reset link has already been used' });
+  if (new Date(record.expires_at) < new Date()) return res.status(400).json({ error: 'This reset link has expired' });
+
+  const passwordHash = await bcrypt.hash(password, 12);
+
+  const { error: updateError } = await supabase
+    .from('users')
+    .update({ password_hash: passwordHash })
+    .eq('id', record.user_id);
+
+  if (updateError) return res.status(500).json({ error: 'Failed to reset password' });
+
+  await supabase
+    .from('password_reset_tokens')
+    .update({ used_at: new Date().toISOString() })
+    .eq('id', record.id);
+
+  res.json({ message: 'Password reset successfully' });
 });
 
 // PATCH /api/auth/profile

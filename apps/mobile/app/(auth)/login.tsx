@@ -69,6 +69,11 @@ export default function LoginScreen() {
           />
           {error ? <Text style={styles.errorText}>{error}</Text> : null}
           <Button label="Sign In" style={styles.button} onPress={handleLogin} loading={loading} size="lg" />
+          <Link href="/(auth)/forgot-password" asChild>
+            <TouchableOpacity style={styles.forgotButton}>
+              <Text style={styles.forgotText}>Forgot password?</Text>
+            </TouchableOpacity>
+          </Link>
         </View>
 
         <View style={styles.footer}>
@@ -84,6 +89,8 @@ export default function LoginScreen() {
 
 const styles = StyleSheet.create({
   button: { marginTop: spacing.md },
+  forgotButton: { alignItems: 'center', paddingVertical: spacing.xs },
+  forgotText: { ...typography.bodyMd, color: colors.text1 },
   container: { flexGrow: 1, padding: spacing.lg, justifyContent: 'center', gap: spacing.xl },
   header: { alignItems: 'center', gap: spacing.md },
   logoContainer: {
