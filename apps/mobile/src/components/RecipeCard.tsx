@@ -25,7 +25,7 @@ export function RecipeCard({ title, imageUrl, totalTimeMinutes, servings, cuisin
           <Image source={{ uri: imageUrl }} style={styles.image} resizeMode="cover" />
           {totalTimeMinutes && (
             <View style={styles.timeBadge}>
-              <Ionicons name="time-outline" size={11} color={colors.text1} />
+              <Ionicons name="time-outline" size={11} color="#FFFFFF" />
               <Text style={styles.timeBadgeText}>{formatTime(totalTimeMinutes)}</Text>
             </View>
           )}
@@ -86,7 +86,7 @@ function createStyles(colors: Colors) {
       paddingVertical: 4,
       borderRadius: radius.full,
     },
-    timeBadgeText: { ...typography.caption, color: colors.text1, fontWeight: '600' },
+    timeBadgeText: { ...typography.caption, color: '#FFFFFF', fontWeight: '600' },
     content: { padding: spacing.md, gap: spacing.xs },
     title: { ...typography.titleMd, color: colors.text0 },
     meta: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm, flexWrap: 'wrap' },
