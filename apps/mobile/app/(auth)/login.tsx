@@ -43,6 +43,7 @@ export default function LoginScreen() {
         <View style={styles.form}>
           <TextInput
             label="Email"
+            labelColor="#FFFFFF"
             placeholder="you@example.com"
             value={email}
             onChangeText={setEmail}
@@ -53,6 +54,7 @@ export default function LoginScreen() {
           />
           <TextInput
             label="Password"
+            labelColor="#FFFFFF"
             placeholder="Your password"
             value={password}
             onChangeText={setPassword}

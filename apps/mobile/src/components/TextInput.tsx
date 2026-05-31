@@ -4,19 +4,20 @@ import { useColors, spacing, radius, typography, Colors } from '@/src/lib/theme'
 
 interface InputProps extends TextInputProps {
   label?: string;
+  labelColor?: string;
   error?: string;
   leftIcon?: React.ReactNode;
   rightIcon?: React.ReactNode;
 }
 
 export const TextInput = forwardRef<RNTextInput, InputProps>(
-  ({ label, error, leftIcon, rightIcon, style, ...props }, ref) => {
+  ({ label, labelColor, error, leftIcon, rightIcon, style, ...props }, ref) => {
     const colors = useColors();
     const styles = useMemo(() => createStyles(colors), [colors]);
 
     return (
       <View style={styles.container}>
-        {label && <Text style={styles.label}>{label}</Text>}
+        {label && <Text style={[styles.label, labelColor ? { color: labelColor } : undefined]}>{label}</Text>}
         <View style={[styles.inputWrapper, error && styles.inputError]}>
           {leftIcon && <View style={styles.iconLeft}>{leftIcon}</View>}
           <RNTextInput

@@ -53,32 +53,32 @@ export default function SignUpScreen() {
         </View>
         <View style={styles.form}>
           <TextInput
-            label="First Name" placeholder="Jane" value={firstName} onChangeText={setFirstName}
+            label="First Name" labelColor="#FFFFFF" placeholder="Jane" value={firstName} onChangeText={setFirstName}
             autoCapitalize="words" returnKeyType="next" onSubmitEditing={() => lastNameRef.current?.focus()}
             leftIcon={<Ionicons name="person-outline" size={18} color={colors.text3} />}
           />
           <TextInput
             ref={lastNameRef}
-            label="Last Name" placeholder="Smith" value={lastName} onChangeText={setLastName}
+            label="Last Name" labelColor="#FFFFFF" placeholder="Smith" value={lastName} onChangeText={setLastName}
             autoCapitalize="words" returnKeyType="next" onSubmitEditing={() => emailRef.current?.focus()}
             leftIcon={<Ionicons name="person-outline" size={18} color={colors.text3} />}
           />
           <TextInput
             ref={emailRef}
-            label="Email" placeholder="you@example.com" value={email} onChangeText={setEmail}
+            label="Email" labelColor="#FFFFFF" placeholder="you@example.com" value={email} onChangeText={setEmail}
             keyboardType="email-address" autoCapitalize="none" returnKeyType="next"
             onSubmitEditing={() => passwordRef.current?.focus()}
             leftIcon={<Ionicons name="mail-outline" size={18} color={colors.text3} />}
           />
           <TextInput
             ref={passwordRef}
-            label="Password" placeholder="Min. 8 characters" value={password} onChangeText={setPassword}
+            label="Password" labelColor="#FFFFFF" placeholder="Min. 8 characters" value={password} onChangeText={setPassword}
             secureTextEntry returnKeyType="next" onSubmitEditing={() => confirmRef.current?.focus()}
             leftIcon={<Ionicons name="lock-closed-outline" size={18} color={colors.text3} />}
           />
           <TextInput
             ref={confirmRef}
-            label="Confirm Password" placeholder="Repeat password" value={confirm} onChangeText={setConfirm}
+            label="Confirm Password" labelColor="#FFFFFF" placeholder="Repeat password" value={confirm} onChangeText={setConfirm}
             secureTextEntry returnKeyType="go" onSubmitEditing={handleSignUp}
             leftIcon={<Ionicons name="lock-closed-outline" size={18} color={colors.text3} />}
           />

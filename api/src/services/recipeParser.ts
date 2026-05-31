@@ -96,6 +96,24 @@ function tryParseJsonLd($: ReturnType<typeof cheerio.load>, url: string): Parsed
   return null;
 }
 
+function extractImageUrl(image: unknown): string | undefined {
+  if (!image) return undefined;
+  if (typeof image === 'string') return image;
+  if (Array.isArray(image)) {
+    for (const item of image) {
+      const url = extractImageUrl(item);
+      if (url) return url;
+    }
+    return undefined;
+  }
+  if (typeof image === 'object' && image !== null) {
+    const obj = image as Record<string, unknown>;
+    if (typeof obj.url === 'string') return obj.url;
+    if (typeof obj.contentUrl === 'string') return obj.contentUrl;
+  }
+  return undefined;
+}
+
 function extractFromSchema(schema: Record<string, unknown>, _url: string): ParsedRecipe {
   const ingredientList = (schema.recipeIngredient as string[] | undefined) || [];
   const instructionList = schema.recipeInstructions as unknown[] | undefined || [];
@@ -126,7 +144,7 @@ function extractFromSchema(schema: Record<string, unknown>, _url: string): Parse
   return {
     title: (schema.name as string) || 'Untitled Recipe',
     description: schema.description as string | undefined,
-    imageUrl: Array.isArray(schema.image) ? (schema.image[0]?.url || schema.image[0]) as string : (schema.image as string | undefined),
+    imageUrl: extractImageUrl(schema.image),
     prepTimeMinutes: parseISODuration(schema.prepTime as string),
     cookTimeMinutes: parseISODuration(schema.cookTime as string),
     totalTimeMinutes: parseISODuration(schema.totalTime as string),

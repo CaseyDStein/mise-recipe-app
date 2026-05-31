@@ -8,6 +8,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { recipesApi } from '@/src/services/api';
 import { useColors, spacing, typography, radius, shadows, Colors } from '@/src/lib/theme';
+import { RecipeBannerAd } from '@/src/components/RecipeBannerAd';
 
 type Ingredient = { id: string; text: string; quantity?: string; unit?: string };
 type Step = { id: string; order_num: number; text: string };
@@ -99,6 +100,8 @@ export default function RecipeScreen() {
             </TouchableOpacity>
           </View>
         )}
+
+        <RecipeBannerAd />
 
         <View style={styles.body}>
           <View style={styles.titleSection}>
@@ -243,9 +246,9 @@ function createStyles(colors: Colors) {
     cuisineChipText: { ...typography.caption, color: colors.accent, fontWeight: '700' },
     title: { ...typography.displayMd, color: colors.text0 },
     description: { ...typography.bodyLg, color: colors.text2, lineHeight: 26 },
-    statsRow: { flexDirection: 'row', gap: spacing.md },
+    statsRow: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.md },
     statCard: {
-      flex: 1, backgroundColor: colors.bg2, borderRadius: radius.md,
+      flexBasis: '47%', flexGrow: 1, backgroundColor: colors.bg2, borderRadius: radius.md,
       padding: spacing.md, alignItems: 'center', gap: 2,
     },
     statValue: { ...typography.titleLg, color: colors.text0 },
