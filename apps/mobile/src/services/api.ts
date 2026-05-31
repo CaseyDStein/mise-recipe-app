@@ -24,10 +24,9 @@ export const recipesApi = {
   import: (url: string) =>
     apiFetch<{ recipe: unknown }>('/api/recipes/import', { method: 'POST', body: JSON.stringify({ url }) }),
 
-  list: (params?: { query?: string; collectionId?: string; tags?: string; page?: number }) => {
+  list: (params?: { query?: string; tags?: string; page?: number }) => {
     const qs = new URLSearchParams();
     if (params?.query) qs.set('query', params.query);
-    if (params?.collectionId) qs.set('collectionId', params.collectionId);
     if (params?.tags) qs.set('tags', params.tags);
     if (params?.page) qs.set('page', String(params.page));
     return apiFetch<{ data: unknown[]; total: number; hasMore: boolean }>(`/api/recipes?${qs}`);
@@ -39,18 +38,6 @@ export const recipesApi = {
 
   patch: (id: string, data: { title?: string }) =>
     apiFetch<{ recipe: unknown }>(`/api/recipes/${id}`, { method: 'PATCH', body: JSON.stringify(data) }),
-};
-
-// Collections
-export const collectionsApi = {
-  list: () => apiFetch<{ data: unknown[] }>('/api/collections'),
-  create: (data: { name: string; description?: string }) =>
-    apiFetch<{ collection: unknown }>('/api/collections', { method: 'POST', body: JSON.stringify(data) }),
-  delete: (id: string) => apiFetch<void>(`/api/collections/${id}`, { method: 'DELETE' }),
-  addRecipe: (collectionId: string, recipeId: string) =>
-    apiFetch<void>(`/api/collections/${collectionId}/recipes`, { method: 'POST', body: JSON.stringify({ recipeId }) }),
-  removeRecipe: (collectionId: string, recipeId: string) =>
-    apiFetch<void>(`/api/collections/${collectionId}/recipes/${recipeId}`, { method: 'DELETE' }),
 };
 
 // Tags

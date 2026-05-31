@@ -6,7 +6,7 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import { useAuthStore } from '@/src/stores/authStore';
 import { useQuery } from '@tanstack/react-query';
-import { recipesApi, collectionsApi } from '@/src/services/api';
+import { recipesApi } from '@/src/services/api';
 import { Button } from '@/src/components/Button';
 import { TextInput } from '@/src/components/TextInput';
 import { useColors, spacing, typography, radius, Colors } from '@/src/lib/theme';
@@ -16,7 +16,6 @@ export default function ProfileScreen() {
   const styles = useMemo(() => createStyles(colors), [colors]);
   const { user, signOut, updateProfile } = useAuthStore();
   const { data: recipes } = useQuery({ queryKey: ['recipes'], queryFn: () => recipesApi.list() });
-  const { data: collections } = useQuery({ queryKey: ['collections'], queryFn: collectionsApi.list });
 
   const [firstName, setFirstName] = useState(user?.firstName ?? '');
   const [lastName, setLastName] = useState(user?.lastName ?? '');
@@ -51,7 +50,6 @@ export default function ProfileScreen() {
 
   const stats = [
     { label: 'Recipes', value: recipes?.total ?? 0, icon: 'restaurant-outline' as const },
-    { label: 'Collections', value: (collections?.data ?? []).length, icon: 'folder-outline' as const },
   ];
 
   return (

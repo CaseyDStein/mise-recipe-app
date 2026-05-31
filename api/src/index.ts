@@ -5,7 +5,6 @@ import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
 import { authRouter } from './routes/auth';
 import { recipesRouter } from './routes/recipes';
-import { collectionsRouter } from './routes/collections';
 import { tagsRouter } from './routes/tags';
 
 const app = express();
@@ -22,7 +21,6 @@ app.get('/health', (_req, res) => res.json({ status: 'ok' }));
 
 app.use('/api/auth', authRouter);
 app.use('/api/recipes', recipesRouter);
-app.use('/api/collections', collectionsRouter);
 app.use('/api/tags', tagsRouter);
 
 app.use((err: Error, _req: express.Request, res: express.Response, _next: express.NextFunction) => {

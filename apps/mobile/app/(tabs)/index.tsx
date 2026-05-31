@@ -45,7 +45,8 @@ export default function HomeScreen() {
           <View style={styles.header}>
             <View style={styles.headerTop}>
               <View>
-                <Text style={styles.greeting}>Hello, {displayName}</Text>
+                <Text style={styles.greeting}>Hello, {displayName}!</Text>
+                <Text style={styles.greeting}>Let's get cooking!</Text>
                 <Text style={styles.subGreeting}>
                   {recipes.length > 0 ? `${data?.total ?? recipes.length} recipes saved` : 'Start saving recipes'}
                 </Text>
@@ -99,7 +100,7 @@ function createStyles(colors: Colors) {
     greeting: { ...typography.displaySm, color: colors.text0 },
     subGreeting: { ...typography.bodyMd, color: colors.text2, marginTop: 2 },
     addButton: {
-      width: 48, height: 48, borderRadius: radius.full,
+      width: 48, height: 48, borderRadius: radius.full, marginTop: -30,
       backgroundColor: colors.accent, alignItems: 'center', justifyContent: 'center',
     },
     sectionTitle: { ...typography.titleSm, color: colors.text2, textTransform: 'uppercase', letterSpacing: 1 },

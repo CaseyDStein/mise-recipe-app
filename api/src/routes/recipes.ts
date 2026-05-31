@@ -10,7 +10,6 @@ recipesRouter.use(requireAuth);
 const importSchema = z.object({ url: z.string().url() });
 const searchSchema = z.object({
   query: z.string().optional(),
-  collectionId: z.string().uuid().optional(),
   tags: z.string().optional(), // comma-separated
   page: z.coerce.number().int().min(1).default(1),
   pageSize: z.coerce.number().int().min(1).max(50).default(20),
@@ -103,7 +102,7 @@ recipesRouter.get('/', async (req, res) => {
   const parsed = searchSchema.safeParse(req.query);
   if (!parsed.success) return res.status(400).json({ error: 'Invalid query params' });
 
-  const { query, collectionId, tags, page, pageSize } = parsed.data;
+  const { query, tags, page, pageSize } = parsed.data;
   const offset = (page - 1) * pageSize;
 
   let dbQuery = supabase
@@ -131,15 +130,6 @@ recipesRouter.get('/', async (req, res) => {
       ...(cuisineRows.data || []).map((r) => r.id),
     ])];
     dbQuery = dbQuery.in('id', matchingIds.length > 0 ? matchingIds : ['no-match']);
-  }
-
-  if (collectionId) {
-    const { data: ids } = await supabase
-      .from('recipe_collections')
-      .select('recipe_id')
-      .eq('collection_id', collectionId);
-    const recipeIds = (ids || []).map((r) => r.recipe_id);
-    dbQuery = dbQuery.in('id', recipeIds.length > 0 ? recipeIds : ['no-match']);
   }
 
   if (tags) {
