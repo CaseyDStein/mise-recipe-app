@@ -1,9 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Platform, View } from 'react-native';
 import Constants, { ExecutionEnvironment } from 'expo-constants';
+import { initAds } from '@/src/lib/ads';
 
-// react-native-google-mobile-ads requires a native dev build — not available in Expo Go.
-// We guard the require so the module is never loaded in Expo Go.
 const isExpoGo = Constants.executionEnvironment === ExecutionEnvironment.StoreClient;
 
 let NativeBannerAd: React.ComponentType<any> | null = null;
@@ -26,9 +25,14 @@ if (!isExpoGo) {
 }
 
 export function RecipeBannerAd() {
+  const [adsReady, setAdsReady] = useState(false);
   const [loaded, setLoaded] = useState(false);
 
-  if (!NativeBannerAd) return null;
+  useEffect(() => {
+    initAds().then(() => setAdsReady(true));
+  }, []);
+
+  if (!NativeBannerAd || !adsReady) return null;
 
   return (
     <View style={{ alignItems: 'center', opacity: loaded ? 1 : 0 }}>

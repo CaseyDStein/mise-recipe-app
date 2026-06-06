@@ -6,6 +6,7 @@ import { useAuthStore } from '@/src/stores/authStore';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { useColors } from '@/src/lib/theme';
+import { initAds } from '@/src/lib/ads';
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { staleTime: 1000 * 60 * 2, gcTime: 1000 * 60 * 10 } },
@@ -14,6 +15,11 @@ const queryClient = new QueryClient({
 function AuthHydrator() {
   const hydrate = useAuthStore((s) => s.hydrate);
   useEffect(() => { hydrate(); }, [hydrate]);
+  return null;
+}
+
+function AdsInitializer() {
+  useEffect(() => { initAds(); }, []);
   return null;
 }
 
@@ -81,6 +87,7 @@ export default function RootLayout() {
     <GestureHandlerRootView style={{ flex: 1 }}>
       <QueryClientProvider client={queryClient}>
         <AuthHydrator />
+        <AdsInitializer />
         <ShareHandler />
         <StatusBar style="auto" />
         <ThemedStack />
