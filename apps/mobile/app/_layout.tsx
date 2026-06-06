@@ -25,7 +25,7 @@ function AdsInitializer() {
 
 function extractRecipeUrl(raw: string): string | null {
   try {
-    if (raw.startsWith('mise://')) {
+    if (raw.startsWith('therecipeorganizer://')) {
       return new URL(raw).searchParams.get('url');
     }
     if (raw.startsWith('http://') || raw.startsWith('https://')) {
@@ -47,7 +47,7 @@ function ShareHandler() {
     Linking.getInitialURL().then((raw) => {
       if (!raw || coldStartHandled.current) return;
       coldStartHandled.current = true;
-      if (raw.startsWith('mise://')) return;
+      if (raw.startsWith('therecipeorganizer://')) return;
       const url = extractRecipeUrl(raw);
       if (url) setPendingUrl(url);
     });

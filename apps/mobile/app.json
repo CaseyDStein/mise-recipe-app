@@ -1,11 +1,11 @@
 {
   "expo": {
     "name": "The Recipe Organizer",
-    "slug": "mise-recipe-app",
+    "slug": "the-recipe-organizer",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
-    "scheme": "mise",
+    "scheme": "therecipeorganizer",
     "userInterfaceStyle": "automatic",
     "splash": {
       "image": "./assets/splash.jpg",
@@ -14,14 +14,14 @@
     },
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.recipeapp.mise"
+      "bundleIdentifier": "com.therecipeorganizer.app"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#0F0F0F"
       },
-      "package": "com.recipeapp.mise",
+      "package": "com.therecipeorganizer.app",
       "intentFilters": [
         {
           "action": "android.intent.action.SEND",

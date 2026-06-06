@@ -127,7 +127,7 @@ authRouter.post('/forgot-password', async (req, res) => {
       expires_at: expiresAt.toISOString(),
     });
 
-    const resetLink = `mise://reset-password?token=${token}`;
+    const resetLink = `therecipeorganizer://reset-password?token=${token}`;
     const fromEmail = process.env.EMAIL_FROM ?? 'noreply@therecipeorganizer.app';
 
     await resend.emails.send({
