@@ -17,7 +17,7 @@ const searchSchema = z.object({
 
 // POST /api/recipes/import
 recipesRouter.post('/import', async (req, res) => {
-  const userId = (req as AuthenticatedRequest).userId;
+  const userId = (req as unknown as AuthenticatedRequest).userId;
   const parsed = importSchema.safeParse(req.body);
   if (!parsed.success) return res.status(400).json({ error: 'Invalid request', details: parsed.error.message });
 
@@ -98,7 +98,7 @@ recipesRouter.post('/import', async (req, res) => {
 
 // GET /api/recipes
 recipesRouter.get('/', async (req, res) => {
-  const userId = (req as AuthenticatedRequest).userId;
+  const userId = (req as unknown as AuthenticatedRequest).userId;
   const parsed = searchSchema.safeParse(req.query);
   if (!parsed.success) return res.status(400).json({ error: 'Invalid query params' });
 
@@ -158,7 +158,7 @@ recipesRouter.get('/', async (req, res) => {
 
 // GET /api/recipes/:id
 recipesRouter.get('/:id', async (req, res) => {
-  const userId = (req as AuthenticatedRequest).userId;
+  const userId = (req as unknown as AuthenticatedRequest).userId;
   const recipe = await fetchFullRecipe(req.params.id, userId);
   if (!recipe) return res.status(404).json({ error: 'Recipe not found' });
   res.json({ recipe });
@@ -166,7 +166,7 @@ recipesRouter.get('/:id', async (req, res) => {
 
 // DELETE /api/recipes/:id
 recipesRouter.delete('/:id', async (req, res) => {
-  const userId = (req as AuthenticatedRequest).userId;
+  const userId = (req as unknown as AuthenticatedRequest).userId;
   const { error } = await supabase
     .from('recipes')
     .delete()
@@ -178,7 +178,7 @@ recipesRouter.delete('/:id', async (req, res) => {
 
 // PATCH /api/recipes/:id (update title, tags)
 recipesRouter.patch('/:id', async (req, res) => {
-  const userId = (req as AuthenticatedRequest).userId;
+  const userId = (req as unknown as AuthenticatedRequest).userId;
   const schema = z.object({ title: z.string().min(1).optional() });
   const parsed = schema.safeParse(req.body);
   if (!parsed.success) return res.status(400).json({ error: 'Invalid request' });
@@ -218,6 +218,6 @@ async function fetchFullRecipe(recipeId: string, userId: string) {
     ingredients: ingredients || [],
     steps: steps || [],
     nutritionalInfo: nutritionalInfo || undefined,
-    tags: (tagRows || []).map((r: { tags: { name: string } | null }) => r.tags?.name).filter(Boolean),
+    tags: (tagRows || []).map((r: any) => r.tags?.name).filter(Boolean),
   };
 }

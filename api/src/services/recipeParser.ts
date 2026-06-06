@@ -1,8 +1,15 @@
 import * as cheerio from 'cheerio';
 import Anthropic from '@anthropic-ai/sdk';
-import type { Ingredient, Step, NutritionalInfo } from '../../packages/shared/src/types';
 
-// Re-exporting from shared types path directly since this is a monorepo
+interface ParsedIngredient { text: string; quantity?: string; unit?: string; name?: string; notes?: string }
+interface ParsedStep { order: number; text: string }
+interface ParsedNutrition {
+  servings?: number; servingSize?: string; calories?: number;
+  totalFatG?: number; saturatedFatG?: number; transFatG?: number;
+  cholesterolMg?: number; sodiumMg?: number; totalCarbsG?: number;
+  dietaryFiberG?: number; totalSugarsG?: number; proteinG?: number;
+}
+
 interface ParsedRecipe {
   title: string;
   description?: string;
@@ -13,9 +20,9 @@ interface ParsedRecipe {
   servings?: number;
   cuisine?: string;
   category?: string;
-  ingredients: Omit<Ingredient, 'id' | 'recipeId'>[];
-  steps: Omit<Step, 'id' | 'recipeId'>[];
-  nutritionalInfo?: Omit<NutritionalInfo, 'id' | 'recipeId'>;
+  ingredients: ParsedIngredient[];
+  steps: ParsedStep[];
+  nutritionalInfo?: ParsedNutrition;
 }
 
 function parseISODuration(iso: string): number | undefined {
@@ -27,7 +34,7 @@ function parseISODuration(iso: string): number | undefined {
   return hours * 60 + minutes || undefined;
 }
 
-function parseNutrition(nutrition: Record<string, string>): Omit<NutritionalInfo, 'id' | 'recipeId'> | undefined {
+function parseNutrition(nutrition: Record<string, string>): ParsedNutrition | undefined {
   if (!nutrition || typeof nutrition !== 'object') return undefined;
   const parseNum = (v: string) => v ? parseFloat(v.replace(/[^\d.]/g, '')) || undefined : undefined;
   return {
@@ -46,7 +53,7 @@ function parseNutrition(nutrition: Record<string, string>): Omit<NutritionalInfo
   };
 }
 
-function parseIngredientText(text: string): Omit<Ingredient, 'id' | 'recipeId'> {
+function parseIngredientText(text: string): ParsedIngredient {
   // Basic parsing: try to extract quantity and unit from the start of the text
   const match = text.match(/^([\d\s¼-¾⅐-⅞\/]+)\s*([a-zA-Z]+\.?)?\s+(.+)$/);
   if (match) {
@@ -209,13 +216,13 @@ ${text}`,
     servings: parsed.servings || undefined,
     cuisine: parsed.cuisine || undefined,
     category: parsed.category || undefined,
-    ingredients: (parsed.ingredients || []).map((i: Partial<Ingredient>) => ({
+    ingredients: (parsed.ingredients || []).map((i: Partial<ParsedIngredient>) => ({
       text: i.text || '',
       quantity: i.quantity || undefined,
       unit: i.unit || undefined,
       name: i.name || undefined,
     })),
-    steps: (parsed.steps || []).map((s: Partial<Step>, idx: number) => ({
+    steps: (parsed.steps || []).map((s: Partial<ParsedStep>, idx: number) => ({
       order: s.order || idx + 1,
       text: s.text || '',
     })),
