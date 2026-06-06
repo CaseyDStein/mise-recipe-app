@@ -14,12 +14,9 @@ if (!isExpoGo) {
     const ads = require('react-native-google-mobile-ads');
     NativeBannerAd = ads.BannerAd;
     adSize = ads.BannerAdSize.ANCHORED_ADAPTIVE_BANNER;
-    // Replace TestIds.BANNER with your real ad unit IDs before publishing:
-    //   ios:     'ca-app-pub-xxx/yyy'
-    //   android: 'ca-app-pub-xxx/zzz'
     adUnitId = Platform.select({
-      ios: ads.TestIds.BANNER,
-      android: ads.TestIds.BANNER,
+      ios: 'ca-app-pub-7085831856242829/3239300211',
+      android: 'ca-app-pub-7085831856242829/9649326120',
     }) as string;
   } catch {}
 }

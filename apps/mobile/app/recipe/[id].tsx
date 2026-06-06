@@ -84,10 +84,10 @@ export default function RecipeScreen() {
           <View style={styles.imageContainer}>
             <Image source={{ uri: recipe.image_url }} style={styles.image} resizeMode="cover" />
             <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
-              <Ionicons name="arrow-back" size={22} color={colors.text0} />
+              <Ionicons name="arrow-back" size={22} color={'#ffffff'} />
             </TouchableOpacity>
             <TouchableOpacity style={styles.deleteButton} onPress={handleDelete}>
-              <Ionicons name="trash-outline" size={20} color={colors.error} />
+              <Ionicons name="trash-outline" size={20} color={'#ffffff'} />
             </TouchableOpacity>
           </View>
         ) : (
