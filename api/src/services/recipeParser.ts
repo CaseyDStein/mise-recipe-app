@@ -25,6 +25,18 @@ interface ParsedRecipe {
   nutritionalInfo?: ParsedNutrition;
 }
 
+function decodeHtmlEntities(text: string): string {
+  if (!text) return text;
+  return text
+    .replace(/&amp;/g, '&')
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&quot;/g, '"')
+    .replace(/&apos;/g, "'")
+    .replace(/&#(\d+);/g, (_, code) => String.fromCharCode(parseInt(code, 10)))
+    .replace(/&#x([0-9a-fA-F]+);/g, (_, code) => String.fromCharCode(parseInt(code, 16)));
+}
+
 function parseISODuration(iso: string): number | undefined {
   if (!iso) return undefined;
   const match = iso.match(/PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?/);
@@ -128,15 +140,15 @@ function extractFromSchema(schema: Record<string, unknown>, _url: string): Parse
   const steps: ParsedRecipe['steps'] = [];
   instructionList.forEach((inst, idx) => {
     if (typeof inst === 'string') {
-      steps.push({ order: idx + 1, text: inst });
+      steps.push({ order: idx + 1, text: decodeHtmlEntities(inst) });
     } else if (typeof inst === 'object' && inst !== null) {
       const obj = inst as Record<string, unknown>;
       if (obj['@type'] === 'HowToSection' && Array.isArray(obj.itemListElement)) {
         (obj.itemListElement as Record<string, unknown>[]).forEach((step) => {
-          steps.push({ order: steps.length + 1, text: (step.text || step.name || '') as string });
+          steps.push({ order: steps.length + 1, text: decodeHtmlEntities((step.text || step.name || '') as string) });
         });
       } else {
-        steps.push({ order: idx + 1, text: (obj.text || obj.name || '') as string });
+        steps.push({ order: idx + 1, text: decodeHtmlEntities((obj.text || obj.name || '') as string) });
       }
     }
   });
@@ -148,17 +160,20 @@ function extractFromSchema(schema: Record<string, unknown>, _url: string): Parse
     return isNaN(n) ? undefined : n;
   };
 
+  const rawCuisine = Array.isArray(schema.recipeCuisine) ? schema.recipeCuisine[0] : schema.recipeCuisine as string | undefined;
+  const rawCategory = Array.isArray(schema.recipeCategory) ? schema.recipeCategory[0] : schema.recipeCategory as string | undefined;
+
   return {
-    title: (schema.name as string) || 'Untitled Recipe',
-    description: schema.description as string | undefined,
+    title: decodeHtmlEntities((schema.name as string) || 'Untitled Recipe'),
+    description: schema.description ? decodeHtmlEntities(schema.description as string) : undefined,
     imageUrl: extractImageUrl(schema.image),
     prepTimeMinutes: parseISODuration(schema.prepTime as string),
     cookTimeMinutes: parseISODuration(schema.cookTime as string),
     totalTimeMinutes: parseISODuration(schema.totalTime as string),
     servings: parseYield(schema.recipeYield),
-    cuisine: Array.isArray(schema.recipeCuisine) ? schema.recipeCuisine[0] : schema.recipeCuisine as string | undefined,
-    category: Array.isArray(schema.recipeCategory) ? schema.recipeCategory[0] : schema.recipeCategory as string | undefined,
-    ingredients: ingredientList.map(parseIngredientText),
+    cuisine: rawCuisine ? decodeHtmlEntities(rawCuisine) : undefined,
+    category: rawCategory ? decodeHtmlEntities(rawCategory) : undefined,
+    ingredients: ingredientList.map(t => parseIngredientText(decodeHtmlEntities(t))),
     steps,
     nutritionalInfo: parseNutrition(schema.nutrition as Record<string, string>),
   };
