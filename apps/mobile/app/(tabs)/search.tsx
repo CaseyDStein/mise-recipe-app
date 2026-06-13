@@ -3,6 +3,7 @@ import {
   View, Text, StyleSheet, FlatList, SafeAreaView, ActivityIndicator,
   TouchableOpacity,
 } from 'react-native';
+import { useGridColumns } from '@/src/hooks/useGridColumns';
 import { router, useFocusEffect } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
@@ -19,6 +20,7 @@ type Tag = { id: string; name: string; recipe_tags: { count: number }[] };
 export default function SearchScreen() {
   const colors = useColors();
   const styles = useMemo(() => createStyles(colors), [colors]);
+  const numColumns = useGridColumns();
   const [query, setQuery] = useState('');
   const [selectedTag, setSelectedTag] = useState<string | null>(null);
   const debouncedQuery = useDebounce(query, 300);
@@ -59,6 +61,9 @@ export default function SearchScreen() {
       <FlatList
         data={recipes}
         keyExtractor={(r) => r.id}
+        key={numColumns}
+        numColumns={numColumns}
+        columnWrapperStyle={numColumns > 1 ? { gap: spacing.md } : undefined}
         contentContainerStyle={styles.list}
         ListHeaderComponent={
           <View style={styles.header}>
@@ -152,17 +157,19 @@ export default function SearchScreen() {
           </View>
         }
         renderItem={({ item }) => (
-          <RecipeCard
-            id={item.id}
-            title={item.title}
-            imageUrl={item.image_url}
-            totalTimeMinutes={item.total_time_minutes}
-            servings={item.servings}
-            cuisine={item.cuisine}
-            onPress={() => router.push(`/recipe/${item.id}`)}
-          />
+          <View style={numColumns > 1 ? styles.gridItem : undefined}>
+            <RecipeCard
+              id={item.id}
+              title={item.title}
+              imageUrl={item.image_url}
+              totalTimeMinutes={item.total_time_minutes}
+              servings={item.servings}
+              cuisine={item.cuisine}
+              onPress={() => router.push(`/recipe/${item.id}`)}
+            />
+          </View>
         )}
-        ItemSeparatorComponent={() => <View style={{ height: spacing.md }} />}
+        ItemSeparatorComponent={numColumns === 1 ? () => <View style={{ height: spacing.md }} /> : undefined}
         ListFooterComponent={<View style={{ height: 100 }} />}
       />
     </SafeAreaView>
@@ -215,5 +222,6 @@ function createStyles(colors: Colors) {
     empty: { alignItems: 'center', paddingVertical: spacing.xxxl, gap: spacing.md },
     emptyTitle: { ...typography.titleLg, color: colors.text1, textAlign: 'center' },
     emptyBody: { ...typography.bodyMd, color: colors.text2, textAlign: 'center' },
+    gridItem: { flex: 1, marginBottom: spacing.md },
   });
 }

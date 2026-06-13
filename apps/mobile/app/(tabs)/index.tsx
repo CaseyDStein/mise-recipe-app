@@ -3,6 +3,7 @@ import {
   View, Text, StyleSheet, FlatList, TouchableOpacity, RefreshControl,
   SafeAreaView, ActivityIndicator,
 } from 'react-native';
+import { useGridColumns } from '@/src/hooks/useGridColumns';
 import { router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useQuery } from '@tanstack/react-query';
@@ -24,6 +25,7 @@ type Recipe = {
 export default function HomeScreen() {
   const colors = useColors();
   const styles = useMemo(() => createStyles(colors), [colors]);
+  const numColumns = useGridColumns();
   const user = useAuthStore((s) => s.user);
   const { data, isLoading, refetch, isRefetching } = useQuery({
     queryKey: ['recipes'],
@@ -39,6 +41,9 @@ export default function HomeScreen() {
       <FlatList
         data={recipes}
         keyExtractor={(r) => r.id}
+        key={numColumns}
+        numColumns={numColumns}
+        columnWrapperStyle={numColumns > 1 ? { gap: spacing.md } : undefined}
         contentContainerStyle={styles.list}
         refreshControl={<RefreshControl refreshing={isRefetching} onRefresh={refetch} tintColor={colors.accent} />}
         ListHeaderComponent={
@@ -72,18 +77,20 @@ export default function HomeScreen() {
           </View>
         }
         renderItem={({ item }) => (
-          <RecipeCard
-            id={item.id}
-            title={item.title}
-            imageUrl={item.image_url}
-            totalTimeMinutes={item.total_time_minutes}
-            servings={item.servings}
-            cuisine={item.cuisine}
-            tags={item.tags}
-            onPress={() => router.push(`/recipe/${item.id}`)}
-          />
+          <View style={numColumns > 1 ? styles.gridItem : undefined}>
+            <RecipeCard
+              id={item.id}
+              title={item.title}
+              imageUrl={item.image_url}
+              totalTimeMinutes={item.total_time_minutes}
+              servings={item.servings}
+              cuisine={item.cuisine}
+              tags={item.tags}
+              onPress={() => router.push(`/recipe/${item.id}`)}
+            />
+          </View>
         )}
-        ItemSeparatorComponent={() => <View style={{ height: spacing.md }} />}
+        ItemSeparatorComponent={numColumns === 1 ? () => <View style={{ height: spacing.md }} /> : undefined}
         ListFooterComponent={<View style={{ height: 100 }} />}
         ListEmptyComponent={isLoading ? <ActivityIndicator color={colors.accent} style={{ marginTop: 40 }} /> : null}
       />
@@ -117,5 +124,6 @@ function createStyles(colors: Colors) {
       paddingVertical: spacing.xs, borderRadius: radius.full,
     },
     emptyChipText: { ...typography.titleSm, color: colors.accent },
+    gridItem: { flex: 1, marginBottom: spacing.md },
   });
 }
